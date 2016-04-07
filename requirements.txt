@@ -1,4 +1,9 @@
-flask
-flask-sqlalchemy
+# Flask and related packages
+Flask
+Flask-Bootstrap
+Flask-SQLAlchemy
+# Flask-WTF
+
+# Other utility packages
 bcrypt
 bbcode
