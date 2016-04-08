@@ -1,8 +1,5 @@
 #Genera-Flask
 
----
-
-##Introduction
 Genera website made using Python and Flask.
 
 ##To Do
