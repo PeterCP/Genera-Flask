@@ -1,20 +1,11 @@
-#!/usr/bin/python3
+from app import app
 
-# Flask and SQLAlchemy imports
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-# Import the configuration oject
-
-app = Flask(__name__)
-app.config.from_object('config')
-db = SQLAlchemy(app)
-
-def init_db():
-	import models
+@app.cli.command("initdb")
+def initdb():
+	from app import db, models
 	db.create_all()
-	del models
-	print 'Database created successfully!'
+	print "Database initialized successfully!"
 
-if __name__ == '__main__':
+@app.cli.command("run")
+def run():
 	app.run()

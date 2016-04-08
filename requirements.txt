@@ -1,9 +1,25 @@
-# Flask and related packages
+### Flask and related packages ###
+
+# Flask framework.
 Flask
+
+# Flask-CLI for using terminal commands.
+Flask-CLI
+
+# Bootstrap integration with Flask.
 Flask-Bootstrap
+
+# SQL-Alchemy integration with Flask.
 Flask-SQLAlchemy
+
+# WTForms integration with Flask.
 # Flask-WTF
 
-# Other utility packages
-bcrypt
-bbcode
+
+### Other utility packages ###
+
+# BCrypt for storage and authentication of user passwords.
+BCrypt
+
+# BBCode for blog and event posts.
+BBCode
