@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
-import bcrypt, bbcode
-from app import db
+
+import bbcode
+
+from app import db, bcrypt
 
 
 # Relationship table used by User and Event for the
@@ -37,7 +39,7 @@ class User(db.Model):
 	def __init__(self, name, email, password, role):
 		self.name = name
 		self.email = email
-		self.pw_hash = bcrypt.hashpw(unicode(password), bcrypt.gensalt())
+		self.pw_hash = bcrypt.generate_password_hash(password)
 		self.role = role
 
 	def __repr__(self):
@@ -72,7 +74,7 @@ class User(db.Model):
 		Returns True if the user introduced the correct
 		password and False otherwise.
 		"""
-		return bcrypt.hashpw(unicode(password), self.pw_hash) == self.pw_hash
+		return bcrypt.check_password_hash(self.pw_hash, password)
 
 	def change_password(self, old_pw, new_pw):
 		"""
@@ -80,7 +82,7 @@ class User(db.Model):
 		Returns True if successful and False otherwise.
 		"""
 		if self.authenticate(old_pw):
-			self.pw_hash = bcrypt.hashpw(unicode(new_pw), bcrypt.gensalt())
+			self.pw_hash = bcrypt.generate_password_hash(password)
 			return True
 		else:
 			return False

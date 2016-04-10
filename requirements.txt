@@ -3,11 +3,14 @@
 # Flask framework.
 Flask
 
-# Flask-CLI for using terminal commands.
-Flask-CLI
+# Flask-BCrypt for storage and authentication of user passwords.
+Flask-BCrypt
 
 # Bootstrap integration with Flask.
 Flask-Bootstrap
+
+# Flask-CLI for using terminal commands.
+Flask-CLI
 
 # SQL-Alchemy integration with Flask.
 Flask-SQLAlchemy
@@ -16,10 +19,8 @@ Flask-SQLAlchemy
 Flask-WTF
 
 
-### Other utility packages ###
 
-# BCrypt for storage and authentication of user passwords.
-BCrypt
+### Other utility packages ###
 
 # BBCode for blog and event posts.
 BBCode
