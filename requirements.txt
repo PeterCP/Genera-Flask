@@ -13,7 +13,7 @@ Flask-Bootstrap
 Flask-SQLAlchemy
 
 # WTForms integration with Flask.
-# Flask-WTF
+Flask-WTF
 
 
 ### Other utility packages ###

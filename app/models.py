@@ -16,10 +16,19 @@ class User(db.Model):
 	__tablename__ = 'users'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(100), nullable=False)
+	
+	# Used as login credentials.
 	email = db.Column(db.String(255), unique=True, nullable=False)
 	pw_hash = db.Column(db.String(), nullable=False)
+
+	# Personal info fields.
+	name = db.Column(db.String(255), nullable=False)
+	# birth_date = db.Column(db.Date())
+
+	# To be used for permission and auth module.
 	role = db.Column(db.Integer, db.ForeignKey('user_roles.id'))
+
+	# Relationship fields.
 	events_attended = db.relationship('Event',
 		secondary=event_attendance,
 		backref=db.backref('users'))
@@ -28,7 +37,7 @@ class User(db.Model):
 	def __init__(self, name, email, password, role):
 		self.name = name
 		self.email = email
-		self.pw_hash = bcrypt.hashpw(password, bcrypt.gensalt())
+		self.pw_hash = bcrypt.hashpw(unicode(password), bcrypt.gensalt())
 		self.role = role
 
 	def __repr__(self):
@@ -63,7 +72,7 @@ class User(db.Model):
 		Returns True if the user introduced the correct
 		password and False otherwise.
 		"""
-		return bcrypt.hashpw(password, self.pw_hash) == self.pw_hash
+		return bcrypt.hashpw(unicode(password), self.pw_hash) == self.pw_hash
 
 	def change_password(self, old_pw, new_pw):
 		"""
@@ -71,7 +80,7 @@ class User(db.Model):
 		Returns True if successful and False otherwise.
 		"""
 		if self.authenticate(old_pw):
-			self.pw_hash = bcrypt.hashpw(new_pw, bcrypt.gensalt())
+			self.pw_hash = bcrypt.hashpw(unicode(new_pw), bcrypt.gensalt())
 			return True
 		else:
 			return False
