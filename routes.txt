@@ -1,0 +1,12 @@
+/
+
+/login
+/logout
+
+/users/
+/users/<int:id>
+
+/events/
+/events/<int:id>
+
+

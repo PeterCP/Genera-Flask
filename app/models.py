@@ -7,9 +7,19 @@ from app import db, bcrypt
 
 # Relationship table used by User and Event for the
 # event attendance relationship.
-event_attendance = db.Table('event_attendance',
+user_event_rel = db.Table('user_event_rel',
 	db.Column('user', db.Integer, db.ForeignKey('users.id')),
 	db.Column('event', db.Integer, db.ForeignKey('events.id')))
+
+user_role_rel = db.Table('user_role_rel',
+	db.Column('user', db.Integer, db.ForeignKey('users.id')),
+	db.Column('role', db.Integer, db.ForeignKey('auth_roles.id')))
+
+# Relationship table used by AuthRole and AuthPermission
+# for the authorization system.
+role_permission_rel = db.Table('role_permission_rel',
+	db.Column('role', db.Integer, db.ForeignKey('auth_roles.id')),
+	db.Column('permission', db.Integer, db.ForeignKey('permissions.id')))
 
 
 
@@ -28,24 +38,23 @@ class User(db.Model):
 	# birth_date = db.Column(db.Date())
 
 	# To be used for permission and auth module.
-	role = db.Column(db.Integer, db.ForeignKey('user_roles.id'))
+	roles = db.relationship('AuthRole',
+		secondary=user_role_rel, backref='users')
 
-	# Relationship fields.
+	# Event related fields.
 	events_attended = db.relationship('Event',
-		secondary=event_attendance,
-		backref=db.backref('users'))
-	events_published = db.relationship('Event')
+		secondary=user_event_rel, backref='attendants')
 
-	def __init__(self, name, email, password, role):
+	events_published = db.relationship('Event', backref='publisher')
+
+	def __init__(self, email, password, name):
 		self.name = name
 		self.email = email
 		self.pw_hash = bcrypt.generate_password_hash(password)
-		self.role = role
 
 	def __repr__(self):
 		return '<User name={user.name}, '\
-			'email={user.email}, '\
-			'role={user.role}>'\
+			'email={user.email}>'\
 			.format(user=self)
 
 	def __eq__(self, other):
@@ -98,21 +107,33 @@ class User(db.Model):
 				score += event.points
 		return score
 
+	def has_permission(self, perm_key):
+		"""
+		Returns True if a permission with perm_key exists within user roles.
+		"""
+		for role in self.roles:
+			for permission in role.permissions:
+				if permission.key == perm_key:
+					return True
+		return False
 
 
-class UserRole(db.Model):
 
-	__tablename__ = 'user_roles'
+class AuthRole(db.Model):
+
+	__tablename__ = 'auth_roles'
 
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(20), unique=True)
-	users = db.relationship('User')
+	""" Backref AuthRole.users from User.roles """
+	permissions = db.relationship('AuthPermission',
+		secondary=role_permission_rel, backref='roles')
 
 	def __init__(self, name):
 		self.name = name
 
 	def __repr__(self):
-		return '<UserRole name={ur.name}>'.format(ur=self)
+		return '<AuthRole name={ar.name}>'.format(ar=self)
 
 	def __eq__(self, other):
 		return type(self) is type(other) and self.id == other.id
@@ -122,34 +143,35 @@ class UserRole(db.Model):
 
 
 
+class AuthPermission(db.Model):
+
+	__tablename__ = 'permissions'
+
+	id = db.Column(db.Integer, primary_key=True)
+	key = db.Column(db.Integer, unique=True, nullable=False)
+	description = db.Column(db.String(255))
+	""" Backref AuthPermission.roles from AuthRole.permissions """
+
+
+
 class Event(db.Model):
 
 	__tablename__ = 'events'
 
 	id = db.Column(db.Integer, primary_key=True)
-	title = db.Column(db.String(100))
+	title = db.Column(db.String(255))
 	text = db.Column(db.String)
 	points = db.Column(db.Integer)
 	date = db.Column(db.DateTime)
-	category = db.Column(db.Integer, db.ForeignKey('event_categories.id'))
-	publisher = db.Column(db.Integer, db.ForeignKey('users.id'))
+	category_id = db.Column(db.Integer, db.ForeignKey('event_categories.id'))
+	publisher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 	published_on = db.Column(db.DateTime)
-	attendees = db.relationship('User',
-		secondary=event_attendance,
-		backref=db.backref('events'))
-
-	def __init__(self, title, text, points, date, category, publisher):
-		self.title = title
-		self.text = text
-		self.points = points
-		self.date = date
-		self.category = category
-		self.publisher = publisher
-		self.published_on = datetime.now()
+	""" Backref Event.publisher from User.events_published """
+	""" Backref Event.attendants from User.events_attended """
+	""" Backref Event.category from EventCategory.events """
 
 	def __repr__(self):
-		return '<Event title={event.title}, points={event.points}, '\
-			'date={event.date}, publisher={event.publisher}>'\
+		return '<Event title={event.title}, points={event.points}>'\
 			.format(event=self)
 
 	def __eq__(self, other):
@@ -170,10 +192,7 @@ class EventCategory(db.Model):
 
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String)
-	events = db.relationship('Event')
-
-	def __init__(self, name):
-		self.name = name
+	events = db.relationship('Event', backref='category')
 
 	def __repr__(self):
 		return '<EventCategory name={ec.name}>'.format(ec=self)
@@ -183,3 +202,4 @@ class EventCategory(db.Model):
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
+

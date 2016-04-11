@@ -12,6 +12,9 @@ Flask-Bootstrap
 # Flask-CLI for using terminal commands.
 Flask-CLI
 
+# Flask-Nav for easy navbar generation.
+Flask-Nav
+
 # SQL-Alchemy integration with Flask.
 Flask-SQLAlchemy
 
