@@ -1,11 +1,13 @@
 from flask import flash, redirect, render_template, request, session, url_for
 
-from app import app, helpers
-from app.forms import LoginForm, RegisterUserForm
+from app import app
+from app.forms import LoginForm
 from app.models import User
+from app import helpers
 
+### General routes ###
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
 	user = helpers.current_user()
 	return render_template('index.html', user=user)
@@ -23,19 +25,25 @@ def login():
 		elif not user.authenticate(form.password.data):
 			form.password.errors.append('Invalid password.')
 		else:
-			helpers.login(user)
-			flash('Welcome, {user.name}!'.format(user=user), 'info')
+			session['user_id'] = user.id
 			return redirect(url_for('index'))
 
 	return render_template('login.html', form=form)
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET'])
 def logout():
-	user = helpers.current_user()
+	user_id = session.get('user_id', None)
+	user = User.query.get(user_id) if user_id else None
 	if user:
 		helpers.logout()
 		flash('Goodbye, {user.name}!'.format(user=user), 'info')
 
 	return redirect(url_for('index'))
+
+from users import users_blueprint
+app.register_blueprint(users_blueprint)
+
+from events import events_blueprint
+app.register_blueprint(events_blueprint)
 
