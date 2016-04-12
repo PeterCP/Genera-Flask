@@ -1,13 +1,29 @@
-{% extends "bootstrap/base.html" %}
+{% extends "layout.html" %}
 
-{% import "bootstrap/wtf.html" as wtf %}
+{% import "macros/wtf.html" as wtf %}
 
 {% block title %}
-	Main page!
+	Login page - Genera App
 {% endblock %}
 
 {% block content %}
-	{{ wtf.quick_form(form=form, action=url_for('login'), method='POST',
-		button_map={'submit': 'primary'}) }}
-	
+<div class="container">
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+			<div class="well">
+				{{ wtf.custom_quick_form(form=form, action=url_for('login'), method='POST',
+					button_map={'submit': 'primary'},
+					classes={'submit': 'btn-block'}) }}
+				{# <form action="{{ url_for('login') }}" method="post" accept-charset="utf-8">
+					{{ form.hidden_tag() }}
+					{{ wtf.form_field(form.email) }}
+					{{ wtf.form_field(form.password) }}
+					{{ wtf.form_field(form.remember) }}
+					{{ form.submit(class_='btn btn-primary btn-block') }}
+				</form> #}
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}
+
