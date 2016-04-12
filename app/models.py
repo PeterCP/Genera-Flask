@@ -1,8 +1,15 @@
 from datetime import datetime, timedelta
 
+from flask_sqlalchemy import SQLAlchemy
 import bbcode
 
-from app import db, bcrypt
+from app import bcrypt, app
+
+
+
+# Register Flask-SQLAlchemy instance
+db = SQLAlchemy(app)
+
 
 
 # Relationship table used by User and Event for the
@@ -19,7 +26,7 @@ user_role_rel = db.Table('user_role_rel',
 # for the authorization system.
 role_permission_rel = db.Table('role_permission_rel',
 	db.Column('role', db.Integer, db.ForeignKey('auth_roles.id')),
-	db.Column('permission', db.Integer, db.ForeignKey('permissions.id')))
+	db.Column('permission', db.Integer, db.ForeignKey('auth_permissions.id')))
 
 
 
@@ -47,10 +54,6 @@ class User(db.Model):
 
 	events_published = db.relationship('Event', backref='publisher')
 
-	def __init__(self, email, password, name):
-		self.name = name
-		self.email = email
-		self.pw_hash = bcrypt.generate_password_hash(password)
 
 	def __repr__(self):
 		return '<User name={user.name}, '\
@@ -62,6 +65,14 @@ class User(db.Model):
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
+
+	@property
+	def password(self):
+		return self.pw_hash
+
+	@password.setter
+	def password(self, new_pw):
+		self.pw_hash = bcrypt.generate_password_hash(new_pw)
 
 	@property
 	def total_score(self):
@@ -91,7 +102,7 @@ class User(db.Model):
 		Returns True if successful and False otherwise.
 		"""
 		if self.authenticate(old_pw):
-			self.pw_hash = bcrypt.generate_password_hash(password)
+			self.password = new_pw
 			return True
 		else:
 			return False
@@ -123,8 +134,9 @@ class AuthRole(db.Model):
 
 	__tablename__ = 'auth_roles'
 
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(20), unique=True)
+	id = db.Column(db.Integer, primary_key=True, nullable=False)
+	key = db.Column(db.String(100), unique=True, nullable=False)
+	description = db.Column(db.String(255))
 	""" Backref AuthRole.users from User.roles """
 	permissions = db.relationship('AuthPermission',
 		secondary=role_permission_rel, backref='roles')
@@ -133,7 +145,7 @@ class AuthRole(db.Model):
 		self.name = name
 
 	def __repr__(self):
-		return '<AuthRole name={ar.name}>'.format(ar=self)
+		return '<AuthRole {ar.key}>'.format(ar=self)
 
 	def __eq__(self, other):
 		return type(self) is type(other) and self.id == other.id
@@ -145,12 +157,15 @@ class AuthRole(db.Model):
 
 class AuthPermission(db.Model):
 
-	__tablename__ = 'permissions'
+	__tablename__ = 'auth_permissions'
 
 	id = db.Column(db.Integer, primary_key=True)
-	key = db.Column(db.Integer, unique=True, nullable=False)
+	key = db.Column(db.String(100), unique=True, nullable=False)
 	description = db.Column(db.String(255))
 	""" Backref AuthPermission.roles from AuthRole.permissions """
+
+	def __repr__(self):
+		return '<AuthPermission {ap.key}>'.format(ap=self)
 
 
 

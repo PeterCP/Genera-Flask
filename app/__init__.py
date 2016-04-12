@@ -3,7 +3,8 @@ from flask.ext.bcrypt import Bcrypt
 from flask_bootstrap import Bootstrap
 from flask_cli import FlaskCLI
 from flask_nav import Nav
-from flask_sqlalchemy import SQLAlchemy
+from flask_nav.elements import Navbar, View
+# from flask_sqlalchemy import SQLAlchemy
 
 # Create application instance.
 app = Flask("Genera-Flask")
@@ -26,8 +27,10 @@ from app.navigation import navbar
 nav.register_element('navbar', navbar)
 # nav.init_app(app)
 
+# NOTE: Moved to app.models
 # Register Flask-SQLAlchemy
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 
 # Import views.
-from app.views import *
+from app import views
+
