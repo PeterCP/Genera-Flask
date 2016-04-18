@@ -1,0 +1,21 @@
+{% import "macros/wtf.html.j2" as wtf %}
+{% import "macros/custom.html.j2.bak" as custom %}
+
+{% extends "layout.html.j2" %}
+
+{% block content %}
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+				<div class="well">
+					{{ custom.render_form(form, btn_class='btn btn-primary btn-block',
+						action_text='Register', field_kwargs={
+							'*': {'label_visible': True},
+							'gender': {'inline': True},
+							'birth_date': {'label_visible': True}}) }}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+

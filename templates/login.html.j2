@@ -1,6 +1,7 @@
-{% extends "layout.html" %}
+{% extends "layout.html.j2" %}
 
-{% import "macros/wtf.html" as wtf %}
+{% import "macros/wtf.html.j2" as wtf %}
+{% import "macros/custom.html.j2" as custom %}
 
 {% block title %}
 	Login page - Genera App
@@ -11,9 +12,11 @@
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
 			<div class="well">
-				{{ wtf.custom_quick_form(form=form, action=url_for('login'), method='POST',
+				{{ custom.render_form(form, action_url=url_for('login'),
+					action_text='Login', btn_class='btn btn-primary') }}
+				{# {{ wtf.custom_quick_form(form=form, action=url_for('login'), method='POST',
 					button_map={'submit': 'primary'},
-					classes={'submit': 'btn-block'}) }}
+					classes={'submit': 'btn-block'}) }} #}
 				{# <form action="{{ url_for('login') }}" method="post" accept-charset="utf-8">
 					{{ form.hidden_tag() }}
 					{{ wtf.form_field(form.email) }}

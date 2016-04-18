@@ -1,0 +1,48 @@
+{% import "macros/wtf.html.j2" as wtf %}
+{% import "macros/custom.html.j2" as custom %}
+
+{% extends "layout.html.j2" %}
+
+{% block styles %}
+	{{ super() }}
+	<link rel="stylesheet" href="http://cdn.wysibb.com/css/default/wbbtheme.css" />
+	<style>
+		textarea.form-control {
+			resize: vertical;
+		}
+	</style>
+{% endblock %}
+
+{% block scripts %}
+	{{ super() }}
+	<script src="http://cdn.wysibb.com/js/jquery.wysibb.min.js"></script>
+	<script>
+		$(function () {
+			$('textarea#text').wysibb({
+				traceTextarea: true
+			});
+			$('textarea#text').removeAttr('required');
+			$('.wysibb-toolbar').removeAttr('style');
+		})
+	</script>
+{% endblock %}
+
+{% block title %}
+	Create new event
+{% endblock %}
+
+{% block content %}
+	<div class="container">
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+				<div class="well">
+					{# {{ wtf.custom_quick_form(form) }} #}
+					{{ custom.render_form(form, method='POST', action_url=url_for('events.new'),
+						btn_class='btn btn-primary btn-block', action_text='Create',
+						field_kwargs={'text': {'required': False}}) }}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+

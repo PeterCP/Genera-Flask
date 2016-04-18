@@ -1,0 +1,142 @@
+{# Renders field for bootstrap 3 standards.
+
+	Params:
+		field - WTForm field
+		kwargs - pass any arguments you want in order to put them into the html attributes.
+		There are few exceptions: for - for_, class - class_, class__ - class_
+
+	Example usage:
+		{{ macros.render_field(form.email, placeholder='Input email', type='email') }}
+#}
+{% macro render_field(field, label_visible=True, placeholder_visible=False, placeholder=None) -%}
+
+	{% set label_visible = label_visible or kwargs.get('label_visible', False) %}
+
+	<div class="form-group {% if field.errors %}has-error {% endif -%}
+		{%- if field.flags.required %}required {% endif -%}
+		{{- kwargs.pop('class_', '') }}" id="{{ kwargs.pop('id', '') }}">
+		{% if (field.type != 'HiddenField' and field.type !='CSRFTokenField') and label_visible %}
+			{{ field.label(class_='control-label') }}
+		{% endif %}
+		{% set ph = placeholder if placeholder else field.label.text %}
+		{% set req = kwargs.pop('required', False) or required or field.flags.required %}
+		{% if (not label_visible or placeholder_visible) and ph %}
+			{{ field(class_='form-control', placeholder=ph,
+				required=req, **kwargs) }}
+		{% else %}
+			{{ field(class_='form-control', required=req, **kwargs) }}
+		{% endif %}
+		{% if field.errors %}
+			{% for e in field.errors %}
+				<p class="help-block">{{ e }}</p>
+			{% endfor %}
+		{% endif %}
+	</div>
+{%- endmacro %}
+
+{# Renders checkbox fields since they are represented differently in bootstrap
+	Params:
+		field - WTForm field (there are no check, but you should put here only BooleanField.
+		kwargs - pass any arguments you want in order to put them into the html attributes.
+		There are few exceptions: for - for_, class - class_, class__ - class_
+
+	Example usage:
+		{{ macros.render_checkbox_field(form.remember_me) }}
+ #}
+{% macro render_checkbox_field(field) -%}
+	<div class="checkbox">
+		<label>
+			{{ field(type='checkbox', **kwargs) }} {{ field.label.text }}
+		</label>
+	</div>
+{%- endmacro %}
+
+{# Renders radio field
+	Params:
+		field - WTForm field (there are no check, but you should put here only BooleanField.
+		inline - if True, renders the radio buttons inline
+		kwargs - pass any arguments you want in order to put them into the html attributes.
+		There are few exceptions: for - for_, class - class_, class__ - class_
+
+	Example usage:
+		{{ macros.render_radio_field(form.answers) }}
+ #}
+{% macro render_radio_field(field, inline=False, label_visible=True) -%}
+	<div class="form-group{% if field.errors %} has-error{% endif -%}
+			{%- if field.flags.required %} required{% endif %}">
+		{{ field.label(class_='control-label') if label_visible }}
+		{% if inline %}
+			<div class="radio inline">
+				{% for value, label, _ in field.iter_choices() %}
+					<label class="{% if inline %}radio-inline{% endif %}">
+						<input type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"
+							{%- if field.flags.required %} required{% endif %}>{{ label }} 
+					</label>
+				{% endfor %}
+			</div>
+		{% else %}
+			{% for value, label, _ in field.iter_choices() %}
+				<div class="radio">
+					<label class="radio-inline">
+						<input type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"
+							{%- if field.flags.required %} required{% endif %}> {{ label }}
+					</label>
+				</div>
+			{% endfor %}
+		{% endif %}
+		{% if field.errors %}
+			{% for e in field.errors %}
+				<p class="help-block">{{ e }}</p>
+			{% endfor %}
+		{% endif %}
+	</div>
+{%- endmacro %}
+
+{# Renders WTForm in bootstrap way. There are two ways to call function:
+	 - as macros: it will render all field forms using cycle to iterate over them
+	 - as call: it will insert form fields as you specify:
+	 e.g. {% call macros.render_form(form, action_url=url_for('login_view'), action_text='Login',
+										class_='login-form') %}
+				{{ macros.render_field(form.email, placeholder='Input email', type='email') }}
+				{{ macros.render_field(form.password, placeholder='Input password', type='password') }}
+				{{ macros.render_checkbox_field(form.remember_me, type='checkbox') }}
+			{% endcall %}
+
+	 Params:
+		form - WTForm class
+		method - method for the form
+		action_url - url where to submit this form
+		action_text - text of submit button
+		form_class - sets a class for form
+		btn_class - class for the submit button
+		field_kwargs - kwargs to pass to each field
+
+	#}
+{% macro render_form(form, method='POST', action_url='', action_text=None,
+	form_classes='', btn_class='btn btn-default', field_kwargs={}) -%}
+
+	<form method="{{ method }}" action="{{ action_url }}" role="form" class="form {{ form_class }}">
+		{{ form.hidden_tag() if form.hidden_tag }}
+		{% if caller %}
+			{{ caller() }}
+		{% else %}
+			{% for field in form %}
+				{% if not bootstrap_is_hidden_field(field) %}
+					{% set field_args = field_kwargs.get('*', {}) %}
+					{% set _ = field_args.update(field_kwargs.get(field.id, {})) %}
+
+					{% if field.type == 'BooleanField' %}
+						{{ render_checkbox_field(field, **field_args) }}
+					{% elif field.type == 'RadioField' %}
+						{{ render_radio_field(field, **field_args) }}
+					{% else %}
+						{{ render_field(field, **field_args) }}
+					{% endif %}
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% if action_text %}
+			<button type="submit" class="{{ btn_class }}">{{ action_text }}</button>
+		{% endif %}
+	</form>
+{%- endmacro %}
