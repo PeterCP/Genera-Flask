@@ -12,6 +12,9 @@ Flask-Bootstrap
 # Flask-CLI for using terminal commands.
 Flask-CLI
 
+# Flask-HTMLmin to automatically minify response content.
+Flask-HTMLmin
+
 # Flask-Nav for easy navbar generation.
 Flask-Nav
 

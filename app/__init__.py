@@ -1,5 +1,6 @@
 from flask import Flask
 from flask.ext.bcrypt import Bcrypt
+from flask.ext.htmlmin import HTMLMIN
 from flask_bootstrap import Bootstrap
 from flask_cli import FlaskCLI
 from flask_nav import Nav
@@ -20,6 +21,9 @@ Bootstrap(app)
 
 # Register Flask-CLI
 FlaskCLI(app)
+
+# Register Flask-HTMLmin
+HTMLMIN(app)
 
 # Register Flask-Nav
 nav = Nav(app)
