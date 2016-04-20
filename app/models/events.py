@@ -2,11 +2,11 @@ from datetime import datetime
 
 import bbcode
 
-from app.models import db, Comparable
+from app.models import db, ModelMixin
 
 
 
-class Event(BaseModel):
+class Event(db.Model, ModelMixin):
 
 	__tablename__ = 'events'
 
@@ -45,7 +45,7 @@ class Event(BaseModel):
 
 
 
-class EventCategory(BaseModel):
+class EventCategory(db.Model, ModelMixin):
 
 	__tablename__ = 'event_categories'
 

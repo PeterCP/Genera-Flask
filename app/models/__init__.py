@@ -8,7 +8,7 @@ db = SQLAlchemy(app)
 
 
 
-class BaseModel(db.Model):
+class ModelMixin:
 	
 	def __eq__(self, other):
 		return type(self) is type(other) and self.id == other.id

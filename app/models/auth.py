@@ -1,9 +1,9 @@
-from app.models import db, BaseModel
+from app.models import db, ModelMixin
 from app.models.relationship_tables import role_permission_rel
 
 
 
-class AuthRole(BaseModel):
+class AuthRole(db.Model, ModelMixin):
 
 	__tablename__ = 'auth_roles'
 
@@ -19,7 +19,7 @@ class AuthRole(BaseModel):
 
 
 
-class AuthPermission(BaseModel):
+class AuthPermission(db.Model, ModelMixin):
 
 	__tablename__ = 'auth_permissions'
 
