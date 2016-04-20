@@ -8,13 +8,26 @@ db = SQLAlchemy(app)
 
 
 
-class Comparable:
+class BaseModel(db.Model):
 	
 	def __eq__(self, other):
 		return type(self) is type(other) and self.id == other.id
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
+
+	def save(self):
+		db.session.add(self)
+		db.session.commit()
+
+	def delete(self):
+		db.session.delete(self)
+		db.session.commit()
+
+	def update(self, data):
+		for key, value in data:
+			if hasattr(self, key):
+				setattr(self, key, value)
 
 
 

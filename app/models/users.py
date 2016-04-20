@@ -5,7 +5,7 @@ from app.models import db, Comparable
 from app.models.relationship_tables import user_event_rel, user_role_rel
 
 
-class User(db.Model, Comparable):
+class User(BaseModel):
 
 	__tablename__ = 'users'
 
@@ -18,7 +18,8 @@ class User(db.Model, Comparable):
 	# Personal info fields.
 	first_name = db.Column(db.String(255), nullable=False)
 	last_name = db.Column(db.String(255), nullable=False)
-	# birth_date = db.Column(db.Date())
+	gender = db.Column(db.Boolean(), nullable=False) # True='male', False='female'
+	birth_date = db.Column(db.Date(), nullable=False)
 
 	# To be used for permission and auth module.
 	roles = db.relationship('AuthRole',
@@ -36,6 +37,10 @@ class User(db.Model, Comparable):
 			'name=\'{user.first_name} {user.last_name}\'>'
 			).format(user=self)
 
+	@property
+	def full_name(self):
+	    return '{} {}'.format(self.first_name, self.last_name)
+	
 	@property
 	def password(self):
 		return self.pw_hash

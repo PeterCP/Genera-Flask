@@ -1,21 +1,27 @@
+from datetime import datetime
+
 import bbcode
 
-from app.models import db
+from app.models import db, Comparable
 
 
 
-class Event(db.Model):
+class Event(BaseModel):
 
 	__tablename__ = 'events'
 
 	id = db.Column(db.Integer, primary_key=True)
-	title = db.Column(db.String(255))
-	text = db.Column(db.String)
-	points = db.Column(db.Integer)
-	date = db.Column(db.DateTime)
-	category_id = db.Column(db.Integer, db.ForeignKey('event_categories.id'))
-	publisher_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	published_on = db.Column(db.DateTime)
+	title = db.Column(db.String(255), nullable=False)
+	text = db.Column(db.String, nullable=False)
+	points = db.Column(db.Integer, nullable=False)
+	date = db.Column(db.Date, nullable=False)
+	time = db.Column(db.Time, nullable=False)
+	category_id = db.Column(db.Integer, db.ForeignKey('event_categories.id'),
+		nullable=False)
+	publisher_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+		nullable=False)
+	published_on = db.Column(db.DateTime, nullable=False,
+		default=datetime.now())
 	""" Backref Event.publisher from User.events_published """
 	""" Backref Event.attendants from User.events_attended """
 	""" Backref Event.category from EventCategory.events """
@@ -28,14 +34,23 @@ class Event(db.Model):
 	def rendered_text(self):
 		return bbcode.render_html(self.text)
 
+	@property
+	def date_time(self):
+		return datetime.combine(self.date, self.time)
+
+	@date_time.setter
+	def date_time(self, value):
+		self.date = value.date()
+		self.time = value.time()
 
 
-class EventCategory(db.Model):
+
+class EventCategory(BaseModel):
 
 	__tablename__ = 'event_categories'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String)
+	name = db.Column(db.String, nullable=False)
 	events = db.relationship('Event', backref='category')
 
 	def __repr__(self):
