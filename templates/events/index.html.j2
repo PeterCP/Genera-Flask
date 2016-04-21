@@ -7,7 +7,7 @@
 {% block content %}
 	<div class="container">
 		<div class="row">
-			<div class="col-md-8">
+			<div class="col-md-8 col-md-offset-2">
 				<div class="list-group">
 					{% for event in events %}
 						<a href="{{ url_for('events.view_single', evt_id=event.id) }}"
@@ -15,9 +15,9 @@
 							<h4 class="list-group-item-heading">
 								{{ event.title }}
 								<small style="margin-left: 10px;">
-									<ul class="list-inline">
+									<ul class="list-inline pull-right">
 										<li><strong>Points:</strong> {{ event.points }}</li>
-										<li><strong>Date:</strong> {{ event.date }}</li>
+										<li><strong>Date:</strong> {{ event.date|strftime }}</li>
 										<li><strong>Category:</strong> {{ event.category.name }}</li>
 									</ul>
 								</small>

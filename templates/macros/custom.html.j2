@@ -112,26 +112,30 @@
 		field_kwargs - kwargs to pass to each field
 
 	#}
-{% macro render_form(form, method='POST', action_url='', action_text=None,
+{% macro render_form(form, method='POST', action_url='', action_text='Submit',
 	form_classes='', btn_class='btn btn-default', field_kwargs={}) -%}
 
-	<form method="{{ method }}" action="{{ action_url }}" role="form" class="form {{ form_class }}">
+	<form method="{{ method }}" action="{{ action_url }}" role="form" class="form {{ form_classes }}">
 		{{ form.hidden_tag() if form.hidden_tag }}
 		{% if caller %}
 			{{ caller() }}
 		{% else %}
 			{% for field in form %}
 				{% if not bootstrap_is_hidden_field(field) %}
-					{% set field_args = field_kwargs.get('*', {}) %}
-					{% set _ = field_args.update(field_kwargs.get(field.id, {})) %}
 
-					{% if field.widget.input_type == 'checkbox' %}
+					{% set field_args = dict(field_kwargs.get('*', {})) %}
+					{% set _ = field_args.update(field_kwargs.get(field.name, {})) %}
+
+					{% if field.type == 'BooleanField' %}
 						{{ render_checkbox_field(field, **field_args) }}
-					{% elif field.widget.input_type == 'radio' %}
+					{% elif field.type == 'RadioField' %}
 						{{ render_radio_field(field, **field_args) }}
 					{% else %}
 						{{ render_field(field, **field_args) }}
 					{% endif %}
+
+					{% set _ = field_args.clear() %}
+
 				{% endif %}
 			{% endfor %}
 		{% endif %}
@@ -140,3 +144,4 @@
 		{% endif %}
 	</form>
 {%- endmacro %}
+

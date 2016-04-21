@@ -1,7 +1,10 @@
-{% import "macros/wtf.html.j2" as wtf %}
-{% import "macros/custom.html.j2.bak" as custom %}
+{% import "macros/custom.html.j2" as custom %}
 
 {% extends "layout.html.j2" %}
+
+{% block title %}
+	Create new user
+{% endblock %}
 
 {% block content %}
 	<div class="container">
@@ -11,8 +14,7 @@
 					{{ custom.render_form(form, btn_class='btn btn-primary btn-block',
 						action_text='Register', field_kwargs={
 							'*': {'label_visible': True},
-							'gender': {'inline': True},
-							'birth_date': {'label_visible': True}}) }}
+							'gender': {'inline': True}}) }}
 				</div>
 			</div>
 		</div>

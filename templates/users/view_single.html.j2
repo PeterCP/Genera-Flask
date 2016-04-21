@@ -1,18 +1,29 @@
 {% extends "layout.html.j2" %}
 
+{% block title %}
+	{{ user.full_name }}
+{% endblock %}
+
 {% block content %}
-	{# To be implemented: Page for user profile. #}
 	<div class="container">
 		<div class="jumbotron">
-			<div class="row">
-				<h1 class="title">{{ user.name }}</h1>
-				<div class="col-md-6">
-					Some content.
-				</div>
-				<div class="col-md-6">
-					Some more content.
-				</div>
-			</div>
+			<h1>{{ user.full_name }}</h1>
+			<dl class="dl-horizontal">
+				<dt>Email:</dt>
+				<dd>{{ user.email }}</dd>
+
+				<dt>Gender:</dt>
+				<dd>{{ 'Male' if user.gender else 'Female' }}</dd>
+
+				<dt>Birth Date:</dt>
+				<dd>{{ user.birth_date|strftime }}</dd>
+
+				<dt>Total Score:</dt>
+				<dd>{{ user.total_score }}</dd>
+
+				<dt>Recent Score:</dt>
+				<dd>{{ user.recent_score }}</dd>
+			</dl>
 		</div>
 	</div>
 {% endblock %}
