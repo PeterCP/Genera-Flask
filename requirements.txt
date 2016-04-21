@@ -30,3 +30,6 @@ Flask-WTF
 
 # BBCode for blog and event posts.
 BBCode
+
+# Gunicorn to run the app on Heroku.
+Gunicorn
