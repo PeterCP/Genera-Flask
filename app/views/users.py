@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, abort
+from datetime import datetime
+
+from flask import Blueprint, render_template, redirect, url_for, abort
 
 from app import app, helpers
-from app.models import User
+from app.forms import RegisterUserForm
+from app.models import db, User
 
 
 
@@ -10,7 +13,27 @@ users_blueprint = Blueprint('users', __name__, url_prefix='/users')
 
 @users_blueprint.route('/', methods=['GET'])
 def view_all():
-	return render_template('users/index.html')
+	users = User.query.all()
+	return render_template('users/index.html.j2', users=users)
+
+
+@users_blueprint.route('/new', methods=['GET', 'POST'])
+def new():
+	form = RegisterUserForm()
+
+	app.logger.info(form.data)
+
+	if form.validate_on_submit():
+		data = dict(form.data)
+		data.pop('confirm_password')
+		user = User(**data)
+		# user.update(form.data)
+		db.session.add(user)
+		db.session.commit()
+		helpers.login(user)
+		return redirect(url_for('index'))
+
+	return render_template('users/new.html.j2', form=form)
 
 
 @users_blueprint.route('/<int:user_id>/', methods=['GET'])
@@ -21,8 +44,7 @@ def view_single(user_id):
 		return abort(404)
 	
 	# is_current_user = user == helpers.current_user()
-	return render_template('users/view_single.html', user=user)
-
+	return render_template('users/view_single.html.j2', user=user)
 
 
 @users_blueprint.route('/<int:user_id>/settings', methods=['GET', 'POST'])
@@ -34,5 +56,5 @@ def settings(user_id):
 	elif user != helpers.current_user():
 		return abort(403)
 
-	return render_template('users/settings.html')
+	return render_template('users/settings.html.j2')
 
