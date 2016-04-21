@@ -16,7 +16,7 @@
 				<dd>{{ 'Male' if user.gender else 'Female' }}</dd>
 
 				<dt>Birth Date:</dt>
-				<dd>{{ user.birth_date|strftime }}</dd>
+				<dd>{{ user.birth_date | format_date }}</dd>
 
 				<dt>Total Score:</dt>
 				<dd>{{ user.total_score }}</dd>

@@ -17,7 +17,7 @@
 								<small style="margin-left: 10px;">
 									<ul class="list-inline pull-right">
 										<li><strong>Points:</strong> {{ event.points }}</li>
-										<li><strong>Date:</strong> {{ event.date|strftime }}</li>
+										<li><strong>Date:</strong> {{ event.date | format_date }}</li>
 										<li><strong>Category:</strong> {{ event.category.name }}</li>
 									</ul>
 								</small>
