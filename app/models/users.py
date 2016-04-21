@@ -61,8 +61,8 @@ class User(db.Model, ModelMixin):
 		"""
 		Returns the score a user has from events attended in the last month.
 		"""
-		one_month_ago = datetime.now() - timedelta(days=30)
-		return self.get_score(when=one_month_ago)
+		one_month_ago = datetime.today() - timedelta(days=30)
+		return self.get_score(when=one_month_ago.date())
 
 	def authenticate(self, password):
 		"""
