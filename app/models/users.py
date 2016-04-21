@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
 from app import bcrypt
-from app.models import db, ModelMixin
+from app.models import db, BaseModel
 from app.models.relationship_tables import user_event_rel, user_role_rel
 
 
-class User(db.Model, ModelMixin):
+class User(BaseModel):
 
 	__tablename__ = 'users'
 

@@ -8,7 +8,9 @@ db = SQLAlchemy(app)
 
 
 
-class ModelMixin:
+class BaseModel(db.Model):
+
+	__abstract__ = True
 	
 	def __eq__(self, other):
 		return type(self) is type(other) and self.id == other.id
@@ -28,6 +30,13 @@ class ModelMixin:
 		for key, value in data:
 			if hasattr(self, key):
 				setattr(self, key, value)
+
+	def __iter__(self):
+		values = vars(self)
+		for attr in self.__mapper__.columns.keys():
+			if attr in values:
+				yield attr, values[attr]
+
 
 
 
