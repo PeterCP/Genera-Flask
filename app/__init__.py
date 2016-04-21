@@ -7,8 +7,24 @@ from flask_nav import Nav
 from flask_nav.elements import Navbar, View
 # from flask_sqlalchemy import SQLAlchemy
 
+
+
+# Extend Flask to redefine the autoescape method to allow autoescaping
+# for files ending with .html.j2
+class Application(Flask):
+
+	def select_jinja_autoescape(self, filename):
+		if filename is None:
+			return False
+		elif filename.endswith('.html.j2'):
+			return True
+		else:
+			return Flask.select_jinja_autoescape(self, filename)
+
+
+
 # Create application instance.
-app = Flask("Genera-Flask")
+app = Application("Genera-Flask")
 
 # Register configuration from app_root/config.py
 app.config.from_object('config')
@@ -34,6 +50,15 @@ nav.register_element('navbar', navbar)
 # NOTE: Moved to app.models
 # Register Flask-SQLAlchemy
 # db = SQLAlchemy(app)
+
+
+
+# Define a template filter to format dates.
+@app.template_filter('format_date')
+def _jinja2_filter_datetime(date, format='%b %d, %Y'):
+	return date.strftime(format)
+
+
 
 # Import views.
 from app import views
