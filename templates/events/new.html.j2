@@ -23,6 +23,7 @@
 			});
 			$('textarea#text').removeAttr('required');
 			$('.wysibb-toolbar').removeAttr('style');
+			$('.wysibb-text-editor').css('min-height', 300);
 		})
 	</script>
 {% endblock %}
@@ -39,9 +40,7 @@
 					{# {{ wtf.custom_quick_form(form) }} #}
 					{{ custom.render_form(form, method='POST', action_url=url_for('events.new'),
 						btn_class='btn btn-primary btn-block', action_text='Create',
-						field_kwargs={
-							'text': {'required': False,
-								'label_visible': True}}) }}
+						field_kwargs={'text': {'required': False}}) }}
 				</div>
 			</div>
 		</div>
