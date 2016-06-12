@@ -10,7 +10,7 @@ class User(BaseModel):
 	__tablename__ = 'users'
 
 	id = db.Column(db.Integer, primary_key=True)
-	
+
 	# Used as login credentials.
 	email = db.Column(db.String(255), unique=True, nullable=False)
 	pw_hash = db.Column(db.String(), nullable=False)
@@ -34,13 +34,13 @@ class User(BaseModel):
 
 	def __repr__(self):
 		return ('<User id={user.id}, email=\'{user.email}\', '
-			'name=\'{user.first_name} {user.last_name}\'>'
+			'name=\'{user.full_name}\'>'
 			).format(user=self)
 
 	@property
 	def full_name(self):
 	    return '{} {}'.format(self.first_name, self.last_name)
-	
+
 	@property
 	def password(self):
 		return self.pw_hash
@@ -102,4 +102,3 @@ class User(BaseModel):
 				if permission.key == perm_key:
 					return True
 		return False
-

@@ -1,11 +1,10 @@
 from flask import Flask
-from flask.ext.bcrypt import Bcrypt
-from flask.ext.htmlmin import HTMLMIN
+from flask_bcrypt import Bcrypt
+from flask_htmlmin import HTMLMIN
 from flask_bootstrap import Bootstrap
 from flask_cli import FlaskCLI
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
-# from flask_sqlalchemy import SQLAlchemy
 
 
 
@@ -24,7 +23,7 @@ class Application(Flask):
 
 
 # Create application instance.
-app = Application("Genera-Flask")
+app = Application('Genera-Flask')
 
 # Register configuration from app_root/config.py
 app.config.from_object('config')
@@ -62,4 +61,3 @@ def _jinja2_filter_datetime(date, format='%b %d, %Y'):
 
 # Import views.
 from app import views
-

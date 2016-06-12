@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 class BaseModel(db.Model):
 
 	__abstract__ = True
-	
+
 	def __eq__(self, other):
 		return type(self) is type(other) and self.id == other.id
 
@@ -26,8 +26,8 @@ class BaseModel(db.Model):
 		db.session.delete(self)
 		db.session.commit()
 
-	def update(self, data):
-		for key, value in data:
+	def update(self, **data):
+		for key, value in data.iteritems():
 			if hasattr(self, key):
 				setattr(self, key, value)
 
@@ -39,8 +39,6 @@ class BaseModel(db.Model):
 
 
 
-
 from users import User
 from auth import AuthRole, AuthPermission
 from events import Event, EventCategory
-
