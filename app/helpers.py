@@ -1,4 +1,4 @@
-from flask import session
+from flask import session, request
 
 from app.models import User
 
@@ -11,12 +11,8 @@ def current_user():
 			return user
 	return None
 
-def current_user_id():
-	user_id = session.get('user_id', None)
-
 def login(user):
 	session['user_id'] = user.id
 
 def logout():
 	session.pop('user_id')
-
