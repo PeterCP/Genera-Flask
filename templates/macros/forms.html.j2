@@ -1,0 +1,73 @@
+{% macro form(form, action=None, method='POST', class='form', role='form') -%}
+{%- set method = method.upper() -%}
+{%- set spoof_method = method not in ['GET', 'POST'] -%}
+<form method="{{ 'POST' if spoof_method else method }}"
+        {%- if action %}action="{{ action }}"{% endif -%}
+        {%- if role %}role="{{ role }}"{% endif -%}
+        {%- if class %}class="{{ class }}"{% endif -%}
+        {%- if id %}id="{{ id }}"{% endif -%}
+        {{- html_params(**kwargs) }}>
+    {{ form.hidden_tag() if form.hidden_tag }}
+    {% if spoof_method -%}
+        <input type="hidden" name="_method" value="{{ method }}" />
+    {%- endif %}
+
+    {{ caller() if caller }}
+</form>
+{%- endmacro %}
+
+
+
+{% macro form_group(field, class=None, id=None, help_block=None) -%}
+<div class="form-group{% if field.errors %} has-error{% endif -%}
+            {%- if field.flags.required %} required{% endif -%}
+            {%- if class %} {{ class }}{% endif %}"
+        {%- if id -%}id="{{ id }}"{%- endif -%}
+        {{- html_params(**kwargs) }}>
+
+    {% if caller -%}
+        {{ caller() }}
+    {%- else -%}
+        {%- if field.widget.input_type == 'checkbox' -%}
+            <div class="checkbox">
+                <label>
+                    {{ field() }} {{ field.label.text }}
+                </label>
+            </div>
+        {%- elif field.widget.input_type == 'radio' -%}
+            {%- for choice in field -%}
+                <div class="radio">
+                    <label>
+                        {{ choice() }} {{ choice.label.text }}
+                    </label>
+                </div>
+            {%- endfor -%}
+        {%- else -%}
+            {{ field.label(class='control-label') }}
+            {{ field(class='form-control') }}
+        {%- endif -%}
+    {%- endif %}
+
+    {% if help_block and not field.errors -%}
+        <span class="help-block">{{ help_block }}</span>
+    {%- endif %}
+    {% if field.errors -%}
+        {%- for error in field.errors -%}
+            <span class="help-block">{{ error }}</span>
+        {%- endfor -%}
+    {%- endif %}
+</div>
+{%- endmacro %}
+
+
+
+{% macro form_submit(text='Submit', btn_class='btn btn-primary', fg_class='form-group', glyphicon=None) %}
+<div class="{{ fg_class }}">
+    <button type="submit" class="{{ btn_class }}">
+        {% if glyphicon -%}
+            <span class="glyphicon glyphicon-{{ glyphicon }}" style="margin-right: 0.3em;"></span>
+        {%- endif %}
+        {{ text }}
+    </button>
+</div>
+{% endmacro %}
