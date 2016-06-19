@@ -11,4 +11,3 @@ MINIFY_PAGE = False
 # SQLAlchemy configuration.
 SQLALCHEMY_DATABASE_URI = 'sqlite:///db/test.db'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
-

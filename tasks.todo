@@ -1,5 +1,5 @@
 General:
-☐ Agregar imagen para evento.
+✔ Agregar imagen para evento. @done(2016-06-19 14:28)
 ☐ Implementar inscribirse a eventos.
 ☐ Seccion proyectos en marcha.
 
@@ -20,3 +20,10 @@ Secciones Sidebar:
 ☐ Proyectos
 ☐ Usuarios y ranking
 ☐ Blog
+
+Modificaciones futuras:
+☐ Cambiar Flask-Bootstrap por Flask-Materialize
+☐ Cambiar WYSIBB por MaterialNote
+
+Urgente:
+☐ Hacer que los directorios de imagenes de eventos se remuevan al borrar el evento.
