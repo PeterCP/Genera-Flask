@@ -12,10 +12,11 @@ class Event(BaseModel):
 
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(255), nullable=False)
-	text = db.Column(db.String, nullable=False)
+	body = db.Column(db.String, nullable=False)
 	points = db.Column(db.Integer, nullable=False)
 	date = db.Column(db.Date, nullable=False)
 	time = db.Column(db.Time, nullable=False)
+	image_path = db.Column(db.String(255))
 	category_id = db.Column(db.Integer, db.ForeignKey('event_categories.id'),
 		nullable=False)
 	publisher_id = db.Column(db.Integer, db.ForeignKey('users.id'),
@@ -31,8 +32,8 @@ class Event(BaseModel):
 			'points=\'{event.points}\'>').format(event=self)
 
 	@property
-	def rendered_text(self):
-		return bbcode.render_html(self.text)
+	def rendered_body(self):
+		return bbcode.render_html(self.body)
 
 	@property
 	def date_time(self):
@@ -42,6 +43,11 @@ class Event(BaseModel):
 	def date_time(self, value):
 		self.date = value.date()
 		self.time = value.time()
+
+	def delete(self):
+		from app.helpers import delete_event_image
+		delete_event_image(self)
+		BaseModel.delete(self)
 
 
 
@@ -55,4 +61,3 @@ class EventCategory(BaseModel):
 
 	def __repr__(self):
 		return '<EventCategory id={ec.id}, name=\'{ec.name}\'>'.format(ec=self)
-

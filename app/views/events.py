@@ -4,7 +4,7 @@ from flask import (Blueprint, request, render_template, redirect, url_for, abort
 
 from app import helpers, app
 from app.forms import CreateEventForm, EventAttendanceForm
-from app.models import User, Event
+from app.models import User, Event, EventCategory
 
 
 events_blueprint = Blueprint('events', __name__, url_prefix='/events')
@@ -19,10 +19,10 @@ def view_all():
 @events_blueprint.route('/<int:evt_id>/', methods=['GET'])
 def view_single(evt_id):
 	event = Event.query.get(evt_id)
-	
+
 	if not event:
 		return abort(404)
-	
+
 	return render_template('events/view_single.html.j2', event=event,
 		can_edit=helpers.current_user() == event.publisher)
 
@@ -31,16 +31,19 @@ def view_single(evt_id):
 def attendance(evt_id):
 	user = helpers.current_user()
 	event = Event.query.get(evt_id)
-	
-	if not user or not event or user != event.publisher:
+
+	if not event:
+		return abort(404)
+	if not user or user != event.publisher:
 		return abort(403)
 
 	form = EventAttendanceForm(data={
 		'event_id': event.id,
 		'user_id': user.id,
 		'attendant_ids': [u.id for u in event.attendants]
-		})
-	
+	})
+	form.attendant_ids.choices = [(user.id, user.full_name) for user in User.query.all()]
+
 	if form.validate_on_submit():
 		new_attendance_list = [User.query.get(user_id) for user_id in form.attendant_ids.data]
 		event.attendants = new_attendance_list
@@ -55,16 +58,25 @@ def attendance(evt_id):
 @events_blueprint.route('/new', methods=['GET', 'POST'])
 def new():
 	form = CreateEventForm()
+	form.category_id.choices = [(ec.id, ec.name) for ec in EventCategory.query.all()]
 	user = helpers.current_user()
 	if not user:
 		return abort(403)
 
+	app.logger.info(form.data)
+
 	if form.validate_on_submit():
 		data = dict(form.data)
+		data.pop('image')
 		event = Event(**data)
 		event.publisher = user
 		event.published_on = datetime.now()
 		event.save()
+		image = form.image.data
+		if image:
+			path = helpers.save_event_image(event, image)
+			event.image_path = path
+			event.save()
 		return redirect(url_for('events.view_single', evt_id=event.id))
 
 	return render_template('events/new.html.j2', form=form, request=request)
@@ -73,11 +85,10 @@ def new():
 # @events_blueprint.route('/<int:evt_id>/settings', methods=['GET', 'POST'])
 # def settings(evt_id):
 # 	event = Event.query.get(evt_id)
-
+#
 # 	if not event:
 # 		return abort(404)
 # 	elif event.publisher != helpers.current_user():
 # 		return abort(403)
-
+#
 # 	return render_template('events/settings.html.j2')
-

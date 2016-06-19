@@ -1,10 +1,9 @@
-from flask_wtf import Form
 from wtforms.fields import *
 from wtforms.fields.html5 import *
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput
-
-from app.models import EventCategory, User
+from flask_wtf import Form
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 
 
@@ -35,13 +34,13 @@ class RegisterUserForm(Form):
 class CreateEventForm(Form):
 
 	title = StringField('Title', validators=[DataRequired()])
-	text = StringField('Post Body', validators=[DataRequired()],
+	body = StringField('Post Body', validators=[DataRequired()],
 		widget=TextArea())
 	points = IntegerField('Points', validators=[DataRequired()])
 	date_time = DateTimeLocalField('Date and Time', validators=[DataRequired()],
 		format='%Y-%m-%dT%H:%M')
-	category_id = SelectField('Category', validators=[DataRequired()], coerce=int,
-		choices=[(ec.id, ec.name) for ec in EventCategory.query.all()])
+	category_id = SelectField('Category', validators=[DataRequired()], coerce=int)
+	image = FileField('Image', validators=[FileAllowed(['jpg', 'png'], 'Must be an image!')])
 
 
 
@@ -51,6 +50,4 @@ class EventAttendanceForm(Form):
 	user_id = HiddenField('user_id', validators=[DataRequired()])
 
 	attendant_ids = SelectMultipleField('Attendants', coerce=int,
-		choices=[(user.id, user.full_name) for user in User.query.all()],
 		widget=ListWidget(prefix_label=False), option_widget=CheckboxInput())
-
