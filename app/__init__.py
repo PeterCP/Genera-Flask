@@ -50,17 +50,9 @@ nav.register_element('navbar', navbar)
 # Register Flask-SQLAlchemy
 # db = SQLAlchemy(app)
 
-
-# Add html_params to jinja_env
-from app.jinja_ext import html_params
-app.jinja_env.globals['html_params'] = html_params
-
-# Define a template filter to format dates.
-@app.template_filter('format_date')
-def _jinja2_filter_datetime(date, format='%b %d, %Y'):
-	return date.strftime(format)
-
-
+# Extend app.jinja_env
+from app.jinja_ext import extend_app
+extend_app(app)
 
 # Import views.
 from app import views
