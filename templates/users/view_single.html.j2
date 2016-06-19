@@ -5,25 +5,23 @@
 {% endblock %}
 
 {% block content %}
-	<div class="container">
-		<div class="jumbotron">
-			<h1>{{ user.full_name }}</h1>
-			<dl class="dl-horizontal">
-				<dt>Email:</dt>
-				<dd>{{ user.email }}</dd>
+<div class="jumbotron">
+	<h1>{{ user.full_name }}</h1>
+	<dl class="dl-horizontal">
+		<dt>Email:</dt>
+		<dd>{{ user.email }}</dd>
 
-				<dt>Gender:</dt>
-				<dd>{{ 'Male' if user.gender else 'Female' }}</dd>
+		<dt>Gender:</dt>
+		<dd>{{ 'Male' if user.gender else 'Female' }}</dd>
 
-				<dt>Birth Date:</dt>
-				<dd>{{ user.birth_date | format_date }}</dd>
+		<dt>Birth Date:</dt>
+		<dd>{{ user.birth_date | format_date }}</dd>
 
-				<dt>Total Score:</dt>
-				<dd>{{ user.total_score }}</dd>
+		<dt>Total Score:</dt>
+		<dd>{{ user.total_score }}</dd>
 
-				<dt>Recent Score:</dt>
-				<dd>{{ user.recent_score }}</dd>
-			</dl>
-		</div>
-	</div>
+		<dt>Recent Score:</dt>
+		<dd>{{ user.recent_score }}</dd>
+	</dl>
+</div>
 {% endblock %}

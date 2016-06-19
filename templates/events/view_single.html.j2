@@ -5,32 +5,31 @@
 {% endblock %}
 
 {% block content %}
-	<div class="container">
-		<div class="jumbotron">
-			<h1>{{ event.title }}</h1>
-			{% if can_edit %}
-				<a href="{{ url_for('events.attendance', evt_id=event.id) }}">Edit attendance</a>
-			{% endif %}
-			<dl class="dl-horizontal">
-				<dt>Points:</dt>
-				<dd>{{ event.points }}</dd>
+<div class="jumbotron">
+	<h1>{{ event.title }}</h1>
+	<img src="{{ event_image_url(event) }}" alt="{{ event.title }}" width="200" height="200" />
+	{% if can_edit %}
+		<a href="{{ url_for('events.attendance', evt_id=event.id) }}">Edit attendance</a>
+	{% endif %}
+	<dl class="dl-horizontal">
+		<dt>Points:</dt>
+		<dd>{{ event.points }}</dd>
 
-				<dt>Date:</dt>
-				<dd>{{ event.date | format_date }}</dd>
+		<dt>Date:</dt>
+		<dd>{{ event.date | format_date }}</dd>
 
-				<dt>Time:</dt>
-				<dd>{{ event.time }}</dd>
+		<dt>Time:</dt>
+		<dd>{{ event.time }}</dd>
 
-				<dt>Publisher:</dt>
-				<dd><a href="{{ url_for('users.view_single', user_id=event.publisher.id) }}">
-					{{ event.publisher.full_name }}
-				</a></dd>
+		<dt>Publisher:</dt>
+		<dd><a href="{{ url_for('users.view_single', user_id=event.publisher.id) }}">
+			{{ event.publisher.full_name }}
+		</a></dd>
 
-				<dt>Category:</dt>
-				<dd>{{ event.category.name }}</dd>
-			</dl>
+		<dt>Category:</dt>
+		<dd>{{ event.category.name }}</dd>
+	</dl>
 
-			<p>{{ event.rendered_text }}</p>
-		</div>
-	</div>
+	<p>{{ event.rendered_body }}</p>
+</div>
 {% endblock %}

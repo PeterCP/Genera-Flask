@@ -15,8 +15,13 @@
             {% call navigation.nav() %}
                 {{ navigation.item(text='Users', url=url_for('users.view_all')) }}
                 {{ navigation.item(text='Events', url=url_for('events.view_all')) }}
-                {% if current_user() %}
-                    {{ navigation.item(text='Current User') }}
+                {% if current_user %}
+                    {% call navigation.dropdown(current_user.full_name) %}
+                        {{ navigation.item(text='View profile', url=url_for('users.view_single', user_id=current_user.id)) }}
+                        {{ navigation.item(text='Logout', url=url_for('logout')) }}
+                    {% endcall %}
+                {% else %}
+                    {{ navigation.item(text='Login', url=url_for('login')) }}
                 {% endif %}
             {% endcall %}
         {% endcall %}

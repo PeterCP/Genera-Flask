@@ -1,48 +1,50 @@
-{% import "macros/wtf.html.j2" as wtf %}
+{% import "macros/forms.html.j2" as forms %}
 {% import "macros/custom.html.j2" as custom %}
 
 {% extends "layouts/app.html.j2" %}
 
 {% block styles %}
-	{{ super() }}
-	<link rel="stylesheet" href="http://cdn.wysibb.com/css/default/wbbtheme.css" />
-	<style>
-		textarea.form-control {
-			resize: vertical;
-		}
-	</style>
+    {{ super() }}
+    <link rel="stylesheet" href="http://cdn.wysibb.com/css/default/wbbtheme.css" />
+    <style>
+        textarea.form-control {
+            resize: vertical;
+        }
+    </style>
 {% endblock %}
 
 {% block scripts %}
-	{{ super() }}
-	<script src="http://cdn.wysibb.com/js/jquery.wysibb.min.js"></script>
-	<script>
-		$(function () {
-			$('textarea#text').wysibb({
-				traceTextarea: true
-			});
-			$('textarea#text').removeAttr('required');
-			$('.wysibb-toolbar').removeAttr('style');
-			$('.wysibb-text-editor').css('min-height', 300);
-		})
-	</script>
+    {{ super() }}
+    <script src="http://cdn.wysibb.com/js/jquery.wysibb.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('textarea#body').wysibb({
+                traceTextarea: true
+            });
+            $('textarea#body').removeAttr('required');
+            $('.wysibb-toolbar').removeAttr('style');
+            $('.wysibb-text-editor').css('min-height', 300);
+
+            $('#image-display').attr('value', $('#image').val().replace('C:\\\\fakepath\\\\', ''));
+        });
+    </script>
 {% endblock %}
 
 {% block title %}
-	Create new event
+    Create new event - Genera App
 {% endblock %}
 
 {% block content %}
-	<div class="container">
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
-				<div class="well">
-					{# {{ wtf.custom_quick_form(form) }} #}
-					{{ custom.render_form(form, method='POST', action_url=url_for('events.new'),
-						btn_class='btn btn-primary btn-block', action_text='Create',
-						field_kwargs={'text': {'required': False}}) }}
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="well">
+    {% call forms.form(form, action=url_for('events.new'), enctype='multipart/form-data') %}
+        {{ forms.form_group(form.title, placeholder='Title') }}
+        {{ forms.form_group(form.body) }}
+        {{ forms.form_group(form.points, placeholder='Points') }}
+        {{ forms.form_group(form.date_time, placeholder='Date and time') }}
+        {{ forms.form_group(form.category_id, placeholder='Category') }}
+        {{ forms.form_group(form.image, placeholder='Image') }}
+        {{ forms.form_submit(text='Create') }}
+    {% endcall %}
+</div>
 {% endblock %}

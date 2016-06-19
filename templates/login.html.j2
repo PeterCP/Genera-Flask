@@ -9,17 +9,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
-            <div class="well">
-                {% call forms.form(form, action=url_for('login'), method='POST') %}
-                    {{ forms.form_group(form.email) }}
-                    {{ forms.form_group(form.password) }}
-                    {{ forms.form_submit(text='Log in', glyphicon='log-in') }}
-                {% endcall %}
-            </div>
-        </div>
-    </div>
+<div class="well">
+    {% call forms.form(form, action=url_for('login'), method='POST') %}
+        {{ forms.form_group(form.email) }}
+        {{ forms.form_group(form.password) }}
+        {{ forms.form_submit(text='Log in', glyphicon='log-in') }}
+    {% endcall %}
 </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% macro form(form, action=None, method='POST', class='form', role='form') -%}
+{% macro form(form, action=None, method='POST', class='form', id=None, role='form', enctype=None) -%}
 {%- set method = method.upper() -%}
 {%- set spoof_method = method not in ['GET', 'POST'] -%}
 <form method="{{ 'POST' if spoof_method else method }}"
@@ -6,11 +6,12 @@
         {%- if role %}role="{{ role }}"{% endif -%}
         {%- if class %}class="{{ class }}"{% endif -%}
         {%- if id %}id="{{ id }}"{% endif -%}
+        {%- if enctype %}enctype="{{ enctype }}"{% endif -%}
         {{- html_params(**kwargs) }}>
-    {{ form.hidden_tag() if form.hidden_tag }}
     {% if spoof_method -%}
         <input type="hidden" name="_method" value="{{ method }}" />
     {%- endif %}
+    {{ form.hidden_tag() if form.hidden_tag }}
 
     {{ caller() if caller }}
 </form>
@@ -18,7 +19,7 @@
 
 
 
-{% macro form_group(field, class=None, id=None, help_block=None) -%}
+{% macro form_group(field, class=None, id=None, help_block=None, placeholder='') -%}
 <div class="form-group{% if field.errors %} has-error{% endif -%}
             {%- if field.flags.required %} required{% endif -%}
             {%- if class %} {{ class }}{% endif %}"
@@ -34,17 +35,28 @@
                     {{ field() }} {{ field.label.text }}
                 </label>
             </div>
-        {%- elif field.widget.input_type == 'radio' -%}
+        {%- elif field.type == 'RadioField' -%}
+            {{ field.label(class='control-label radio') }}
             {%- for choice in field -%}
-                <div class="radio">
-                    <label>
-                        {{ choice() }} {{ choice.label.text }}
-                    </label>
-                </div>
+                <label class="radio-inline">
+                    {{ choice() }} {{ choice.label.text }}
+                </label>
             {%- endfor -%}
+        {%- elif field.type == 'FileField' -%}
+            {% set display_id = field.name + '-display' %}
+            {% set onchange = "$('#" + display_id + "').attr('value', $(this).val().replace('C:\\\\fakepath\\\\', ''));" %}
+            {{ field.label(class='control-label') }}
+            <div class="input-group">
+                <label class="input-group-btn">
+                    <span class="btn btn-primary btn-file">
+                        Browse... {{ field(style='display: none;', onchange=onchange) }}
+                    </span>
+                </label>
+                <input class="form-control" type="text" id="{{ display_id }}" placeholder="{{ placeholder }}" readonly>
+            </div>
         {%- else -%}
             {{ field.label(class='control-label') }}
-            {{ field(class='form-control') }}
+            {{ field(class='form-control', placeholder=placeholder) }}
         {%- endif -%}
     {%- endif %}
 

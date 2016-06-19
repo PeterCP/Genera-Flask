@@ -1,4 +1,4 @@
-{% macro navbar(brand_text='', brand_url=None, brand_img=None, nav_class='navbar navbar-default', target_id='navbar-target') %}
+{% macro navbar(brand_text=None, brand_url=None, brand_img=None, nav_class='navbar navbar-default', target_id='navbar-target') %}
 <nav class="{{ nav_class }}">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -13,7 +13,9 @@
                     <img src="{{ brand_img }}" alt="{{ brand_text }}" height="100%" width="auto" />
                 </a>
             {%- endif %}
-            <a class="navbar-brand" href="{{ brand_url }}">{{ brand_text }}</a>
+            {% if brand_text -%}
+                <a class="navbar-brand" href="{{ brand_url }}">{{ brand_text }}</a>
+            {%- endif %}
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -24,13 +26,17 @@
 </nav>
 {% endmacro %}
 
+
+
 {% macro nav(tag='ul', class='nav navbar-nav', id=None) %}
 <{{ tag }} class="{{ class }}"{% if id %} id="{{ id }}"{% endif %}>
     {{ caller() }}
 </{{ tag }}>
 {% endmacro %}
 
-{% macro item(text='', url='#', endpoint=None, tag='li', class=None) %}
+
+
+{% macro item(text, url='#', endpoint=None, tag='li', class=None) %}
 {% set active = url == request.path %}
 <{{ tag }} {% if class -%}
     class="{{ class }}{% if active %} active{% endif %}"
@@ -40,3 +46,18 @@
     <a href="{{ url }}">{{ text }}</a>
 </{{ tag }}>
 {% endmacro %}
+
+
+
+
+{% macro dropdown(text) -%}
+{% set active = re.search('class="(.* )?active( .*)?"', caller()) %}
+<li role="presentation" class="dropdown{% if active %} active{% endif %}">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        {{ text }} <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+        {{ caller() }}
+    </ul>
+</li>
+{%- endmacro %}

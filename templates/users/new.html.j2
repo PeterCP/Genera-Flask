@@ -1,22 +1,27 @@
 {% import "macros/custom.html.j2" as custom %}
+{% import "macros/forms.html.j2" as forms %}
 
 {% extends "layouts/app.html.j2" %}
 
 {% block title %}
-	Create new user
+	Create new user - Genera App
 {% endblock %}
 
 {% block content %}
-	<div class="container">
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
-				<div class="well">
-					{{ custom.render_form(form, btn_class='btn btn-primary btn-block',
-						action_text='Register', field_kwargs={
-							'*': {'label_visible': True},
-							'gender': {'inline': True}}) }}
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="well">
+	{# custom.render_form(form, btn_class='btn btn-primary btn-block',
+		action_text='Register', field_kwargs={
+			'*': {'label_visible': True},
+			'gender': {'inline': True}}) #}
+	{% call forms.form(form, action=url_for('users.new')) %}
+		{{ forms.form_group(form.email) }}
+		{{ forms.form_group(form.password) }}
+		{{ forms.form_group(form.confirm_password) }}
+		{{ forms.form_group(form.first_name) }}
+		{{ forms.form_group(form.last_name) }}
+		{{ forms.form_group(form.gender) }}
+		{{ forms.form_group(form.birth_date) }}
+		{{ forms.form_submit(text='Register', glyphicon='user') }}
+	{% endcall %}
+</div>
 {% endblock %}
