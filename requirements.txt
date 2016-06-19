@@ -15,8 +15,14 @@ Flask-CLI
 # Flask-HTMLmin to automatically minify response content.
 Flask-HTMLmin
 
+# Flask-Migrate to easily manage database migrations.
+Flask-Migrate
+
 # Flask-Nav for easy navbar generation.
 Flask-Nav
+
+# Flask-Script for managing command line scripts
+Flask-Script
 
 # SQL-Alchemy integration with Flask.
 Flask-SQLAlchemy
