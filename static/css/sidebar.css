@@ -11,6 +11,13 @@
   border-bottom-width:1px;
 }
 
+.sidebar li.active a {
+  color: #fff;
+  text-decoration: none;
+  background-color: #337ab7;
+  outline: 0;
+}
+
 /* collapsed sidebar styles */
 @media screen and (max-width: 767px) {
   .row-offcanvas {
