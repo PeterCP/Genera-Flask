@@ -19,7 +19,7 @@
 					</ul>
 				</small>
 			</h4>
-			<p class="list-group-item-text">{{ event.rendered_body[:200] }}...</p>
+			<p class="list-group-item-text">{{ event.rendered_body | safe }}</p>
 		</a>
 	{% else %}
 		There are no events.

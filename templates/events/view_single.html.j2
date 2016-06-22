@@ -30,6 +30,6 @@
 		<dd>{{ event.category.name }}</dd>
 	</dl>
 
-	<p>{{ event.rendered_body }}</p>
+	<p>{{ event.rendered_body | safe }}</p>
 </div>
 {% endblock %}

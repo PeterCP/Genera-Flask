@@ -1,4 +1,4 @@
-{% macro form(form, action=None, method='POST', class='form', id=None, role='form', enctype=None) -%}
+{% macro form(form, action=None, method='POST', class='form', id=None, role='form', enctype=None, hidden_tags=True) -%}
 {%- set method = method.upper() -%}
 {%- set spoof_method = method not in ['GET', 'POST'] -%}
 <form method="{{ 'POST' if spoof_method else method }}"
@@ -11,7 +11,7 @@
     {% if spoof_method -%}
         <input type="hidden" name="_method" value="{{ method }}" />
     {%- endif %}
-    {{ form.hidden_tag() if form.hidden_tag }}
+    {{ form.hidden_tag() if hidden_tags and form.hidden_tag }}
 
     {{ caller() if caller }}
 </form>
@@ -77,7 +77,7 @@
 <div class="{{ fg_class }}">
     <button type="submit" class="{{ btn_class }}">
         {% if glyphicon -%}
-            <span class="glyphicon glyphicon-{{ glyphicon }}" style="margin-right: 0.3em;"></span>
+            <i class="glyphicon glyphicon-{{ glyphicon }}"></i>
         {%- endif %}
         {{ text }}
     </button>

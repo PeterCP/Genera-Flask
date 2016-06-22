@@ -28,32 +28,42 @@
 
 
 
-{% macro nav(tag='ul', class='nav navbar-nav', id=None) %}
-<{{ tag }} class="{{ class }}"{% if id %} id="{{ id }}"{% endif %}>
+{% macro nav(class=None, id=None, tag='ul') %}
+<{{ tag }} class="nav{% if class %} {{ class }}{% endif %}"
+        {%- if id %}id="{{ id }}"{% endif %}>
     {{ caller() }}
 </{{ tag }}>
 {% endmacro %}
 
 
 
-{% macro item(text, url='#', endpoint=None, tag='li', class=None) %}
+{% macro item(text, url='#', endpoint=None, tag='li', class=None, id=None, glyphicon=None) %}
 {% set active = url == request.path %}
-<{{ tag }} {% if class -%}
+<{{ tag }}{% if id %} id="{{ id }}"{% endif %} {% if class -%}
     class="{{ class }}{% if active %} active{% endif %}"
 {%- else -%}
     {%- if active %}class="active"{% endif -%}
 {%- endif %}>
-    <a href="{{ url }}">{{ text }}</a>
+    <a href="{{ url }}">
+        {% if glyphicon %}
+            <i class="glyphicon glyphicon-{{ glyphicon }}"></i>
+        {% endif %}
+        {{ text }}
+    </a>
 </{{ tag }}>
 {% endmacro %}
 
 
 
 
-{% macro dropdown(text) -%}
+{% macro dropdown(text, class=None, id=None, glyphicon=None) -%}
 {% set active = re.search('class="(.* )?active( .*)?"', caller()) %}
-<li role="presentation" class="dropdown{% if active %} active{% endif %}">
+<li role="presentation" class="dropdown{% if active %} active{% endif %}{% if class %} {{ class }}{% endif %}"
+        {%- if id %}id="{{ id }}"{% endif %}>
     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        {% if glyphicon %}
+            <i class="glyphicon glyphicon-{{ glyphicon }}"></i>
+        {% endif %}
         {{ text }} <span class="caret"></span>
     </a>
     <ul class="dropdown-menu">
