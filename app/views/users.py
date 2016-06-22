@@ -31,6 +31,7 @@ def new():
 		db.session.add(user)
 		db.session.commit()
 		helpers.login(user)
+		flash('User %s created successfully!' % user.full_name, category='success')
 		return redirect(url_for('index'))
 
 	return render_template('users/new.html.j2', form=form)
@@ -39,11 +40,10 @@ def new():
 @users_blueprint.route('/<int:user_id>/', methods=['GET'])
 def view_single(user_id):
 	user = User.query.get(user_id)
-	
+
 	if not user:
 		return abort(404)
-	
-	# is_current_user = user == helpers.current_user()
+
 	return render_template('users/view_single.html.j2', user=user)
 
 
@@ -57,4 +57,3 @@ def settings(user_id):
 		return abort(403)
 
 	return render_template('users/settings.html.j2')
-

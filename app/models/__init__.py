@@ -41,4 +41,4 @@ class BaseModel(db.Model):
 
 from users import User
 from auth import AuthRole, AuthPermission
-from events import Event, EventCategory
+from events import Event, EventCategory, EventEnrollment

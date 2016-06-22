@@ -46,8 +46,11 @@ class CreateEventForm(Form):
 
 class EventAttendanceForm(Form):
 
-	event_id = HiddenField('event_id', validators=[DataRequired()])
-	user_id = HiddenField('user_id', validators=[DataRequired()])
-
 	attendant_ids = SelectMultipleField('Attendants', coerce=int,
 		widget=ListWidget(prefix_label=False), option_widget=CheckboxInput())
+
+
+
+class EventEnrollmentForm(Form):
+
+	reason = StringField('Reason')

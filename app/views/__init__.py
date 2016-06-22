@@ -9,8 +9,7 @@ from app import helpers
 
 @app.route('/', methods=['GET'])
 def index():
-	user = helpers.current_user()
-	return render_template('index.html.j2', user=user)
+	return render_template('index.html.j2')
 
 
 
@@ -26,7 +25,8 @@ def login():
 		elif not user.authenticate(form.password.data):
 			form.password.errors.append('Invalid password.')
 		else:
-			session['user_id'] = user.id
+			helpers.login(user)
+			flash('Login successful. Welcome, %s!' % user.first_name, category='success')
 			return redirect(url_for('index'))
 
 	return render_template('login.html.j2', form=form)
@@ -39,6 +39,8 @@ def logout():
 	user = User.query.get(user_id) if user_id else None
 	if user:
 		helpers.logout()
+		flash('Logout successful. Good bye, %s!' % user.first_name, category='info')
+
 	return redirect(url_for('index'))
 
 
@@ -48,4 +50,3 @@ app.register_blueprint(users_blueprint)
 
 from events import events_blueprint
 app.register_blueprint(events_blueprint)
-

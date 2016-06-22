@@ -28,8 +28,8 @@ class User(BaseModel):
 	# Event related fields.
 	events_attended = db.relationship('Event',
 		secondary=user_event_rel, backref='attendants')
-
 	events_published = db.relationship('Event', backref='publisher')
+	""" Backref User.event_enrollments from EventEnrollment.user """
 
 
 	def __repr__(self):

@@ -24,8 +24,9 @@ class Event(BaseModel):
 	published_on = db.Column(db.DateTime, nullable=False,
 		default=datetime.now())
 	""" Backref Event.publisher from User.events_published """
-	""" Backref Event.attendants from User.events_attended """
 	""" Backref Event.category from EventCategory.events """
+	""" Backref Event.attendants from User.events_attended """
+	""" Backref Event.enrollments from EventEnrollment.event """
 
 	def __repr__(self):
 		return ('<Event id={event.id}, title=\'{event.title}\', '
@@ -61,3 +62,21 @@ class EventCategory(BaseModel):
 
 	def __repr__(self):
 		return '<EventCategory id={ec.id}, name=\'{ec.name}\'>'.format(ec=self)
+
+
+
+class EventEnrollment(BaseModel):
+
+	__tablename__ = 'event_enrollments'
+
+	id = db.Column(db.Integer, primary_key=True)
+	event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+	reason = db.Column(db.String, nullable=True)
+
+	event = db.relationship('Event', backref='enrollments')
+	user = db.relationship('User', backref='event_enrollments')
+
+	def __repr__(self):
+		return ('<EventEnrollment id={ee.id}, user_id={ee.user_id}, '
+			'event_id={ee.event_id}>').format(ee=self)

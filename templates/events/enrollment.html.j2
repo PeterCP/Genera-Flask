@@ -1,0 +1,16 @@
+{% extends "layouts/app.html.j2" %}
+
+{% import "macros/forms.html.j2" as forms %}
+
+{% block title %}
+    Enroll to {{ event.name }} - Genera App
+{% endblock %}
+
+{% block content %}
+<div class="well">
+    {% call forms.form(form, action=url_for('events.enroll', evt_id=event.id)) %}
+        {{ forms.form_group(form.reason, placeholder='Why do you want to enroll to this event?') }}
+        {{ forms.form_submit('Enroll', glyphicon='ok') }}
+    {% endcall %}
+</div>
+{% endblock %}

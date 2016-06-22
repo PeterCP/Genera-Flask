@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from flask import (Blueprint, request, render_template, redirect, url_for, abort)
+from flask import (Blueprint, request, redirect, render_template, flash,
+	url_for, abort)
 
 from app import helpers, app
-from app.forms import CreateEventForm, EventAttendanceForm
-from app.models import User, Event, EventCategory
+from app.forms import CreateEventForm, EventAttendanceForm, EventEnrollmentForm
+from app.models import User, Event, EventCategory, EventEnrollment
 
 
 events_blueprint = Blueprint('events', __name__, url_prefix='/events')
@@ -38,8 +39,6 @@ def attendance(evt_id):
 		return abort(403)
 
 	form = EventAttendanceForm(data={
-		'event_id': event.id,
-		'user_id': user.id,
 		'attendant_ids': [u.id for u in event.attendants]
 	})
 	form.attendant_ids.choices = [(user.id, user.full_name) for user in User.query.all()]
@@ -48,12 +47,41 @@ def attendance(evt_id):
 		new_attendance_list = [User.query.get(user_id) for user_id in form.attendant_ids.data]
 		event.attendants = new_attendance_list
 		event.save()
-		# for user_id in form.attendant_ids:
-		# 	new_attendance_list.append(User.query.get(user_id))
+		flash('Event attendance registered successfully', category='success')
 		return redirect(url_for('events.view_single', evt_id=evt_id))
 
 	return render_template('events/attendance.html.j2', form=form)
 
+
+@events_blueprint.route('/<int:evt_id>/enroll', methods=['GET', 'POST'])
+def enroll(evt_id):
+	user = helpers.current_user()
+	event = Event.query.get(evt_id)
+
+	if not event:
+		return abort(404)
+	if not user:
+		return abort(403)
+
+	form = EventEnrollmentForm()
+
+	if form.validate_on_submit():
+		enrollment = EventEnrollment.query.filter(
+			EventEnrollment.user_id == user.id,
+			EventEnrollment.event_id == event.id
+		).first()
+
+		if enrollment:
+			flash('You are already enrolled to this event', category='danger')
+		else:
+			new_enrollment = EventEnrollment(user_id=user.id, event_id=event.id,
+				reason=form.reason.data)
+			new_enrollment.save()
+			flash('You successfully enrolled to the event "%s"' % event.title, category='success')
+
+		return redirect(url_for('events.view_single', evt_id=event.id))
+
+	return render_template('events/enrollment.html.j2', event=event, form=form)
 
 @events_blueprint.route('/new', methods=['GET', 'POST'])
 def new():
@@ -77,6 +105,7 @@ def new():
 			path = helpers.save_event_image(event, image)
 			event.image_path = path
 			event.save()
+		flash('Event creation successful!', category='success')
 		return redirect(url_for('events.view_single', evt_id=event.id))
 
 	return render_template('events/new.html.j2', form=form, request=request)
