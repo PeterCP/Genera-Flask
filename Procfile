@@ -1,1 +1,1 @@
-web: python genera.py runserver --host $HOST --port $PORT
+web: python genera.py runserver --host $IP --port $PORT
