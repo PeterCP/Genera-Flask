@@ -39,3 +39,6 @@ BBCode
 
 # Gunicorn to run the app on Heroku.
 Gunicorn
+
+# CFFI to fix Heroku buildpack issues.
+cffi
