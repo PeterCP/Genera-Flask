@@ -54,13 +54,24 @@ def html_params(**kwargs):
 
 
 def extend_app(app):
+	import datetime
 	# Template filter to format dates.
-	@app.template_filter('format_date')
-	def _jinja2_filter_datetime(date, format='%b %d, %Y'):
+	@app.template_filter('strftime')
+	def _jinja2_filter_strftime(value, format=None):
 		try:
-			return date.strftime(format)
+			if format:
+				return value.strftime(format)
+			else:
+				if isinstance(value, datetime.datetime):
+					return value.strftime('%b %d, %Y - %I:%M %p')
+				elif isinstance(value, datetime.date):
+					return value.strftime('%b %d, %Y')
+				elif isinstance(value, datetime.time):
+					return value.strftime('%I:%M %p')
+				else:
+					raise ValueError()
 		except ValueError:
-			return date
+			return value
 
 	# Inject current_user into each context.
 	@app.context_processor
