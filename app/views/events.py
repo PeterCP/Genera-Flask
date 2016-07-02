@@ -50,7 +50,7 @@ def attendance(evt_id):
 		flash('Event attendance registered successfully', category='success')
 		return redirect(url_for('events.view_single', evt_id=evt_id))
 
-	return render_template('events/attendance.html.j2', form=form)
+	return render_template('events/attendance.html.j2', form=form, evt_id=event.id)
 
 
 @events_blueprint.route('/<int:evt_id>/enroll', methods=['GET', 'POST'])
@@ -108,7 +108,7 @@ def new():
 		flash('Event creation successful!', category='success')
 		return redirect(url_for('events.view_single', evt_id=event.id))
 
-	return render_template('events/new.html.j2', form=form, request=request)
+	return render_template('events/new.html.j2', form=form)
 
 
 # @events_blueprint.route('/<int:evt_id>/settings', methods=['GET', 'POST'])

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, redirect, url_for, abort
+from flask import Blueprint, render_template, redirect, url_for, abort, flash
 
 from app import app, helpers
 from app.forms import RegisterUserForm
-from app.models import db, User
+from app.models import User
 
 
 
@@ -26,13 +26,14 @@ def new():
 	if form.validate_on_submit():
 		data = dict(form.data)
 		data.pop('confirm_password')
-		user = User(**data)
-		# user.update(form.data)
-		db.session.add(user)
-		db.session.commit()
-		helpers.login(user)
-		flash('User %s created successfully!' % user.full_name, category='success')
-		return redirect(url_for('index'))
+		if not User.query.filter(User.email == data['email']).first():
+			user = User(**data)
+			user.save()
+			helpers.login(user)
+			flash('User %s created successfully!' % user.full_name, category='success')
+			return redirect(url_for('index'))
+		else:
+			form.email.errors.append('This email is already registered.')
 
 	return render_template('users/new.html.j2', form=form)
 
