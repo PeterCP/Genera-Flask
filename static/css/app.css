@@ -1,0 +1,9 @@
+/* Make .form-control[readonly] backgrounds white. */
+.form-control[readonly] {
+    background-color: white;
+}
+
+/* Add an asterisk to required form labels. */
+.form-group.required .control-label::after {
+    content: " *";
+}
