@@ -16,10 +16,10 @@
 		<dd>{{ event.points }}</dd>
 
 		<dt>Date:</dt>
-		<dd>{{ event.date | format_date }}</dd>
+		<dd>{{ event.date | strftime }}</dd>
 
 		<dt>Time:</dt>
-		<dd>{{ event.time }}</dd>
+		<dd>{{ event.time | strftime }}</dd>
 
 		<dt>Publisher:</dt>
 		<dd><a href="{{ url_for('users.view_single', user_id=event.publisher.id) }}">

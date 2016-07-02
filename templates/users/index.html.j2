@@ -23,7 +23,7 @@
 					</a></td>
 					<td>{{ user.email }}</td>
 					<td>{{ 'Male' if user.gender else 'Female' }}</td>
-					<td>{{ user.birth_date | format_date }}</td>
+					<td>{{ user.birth_date | strftime }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
