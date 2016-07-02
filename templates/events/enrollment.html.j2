@@ -9,8 +9,8 @@
 {% block content %}
 <div class="well">
     {% call forms.form(form, action=url_for('events.enroll', evt_id=event.id)) %}
-        {{ forms.form_group(form.reason, placeholder='Why do you want to enroll to this event?') }}
-        {{ forms.form_submit('Enroll', glyphicon='ok') }}
+        {{ forms.textarea_field(form.reason, placeholder='Why do you want to enroll to this event?') }}
+        {{ forms.button_field('Enroll', glyphicon='ok') }}
     {% endcall %}
 </div>
 {% endblock %}

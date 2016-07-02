@@ -1,11 +1,16 @@
-{% import "macros/forms.html.j2" as forms %}
-{% import "macros/custom.html.j2" as custom %}
-
 {% extends "layouts/app.html.j2" %}
+
+{% import "macros/forms.html.j2" as forms %}
 
 {% block styles %}
     {{ super() }}
+
+    <!-- Include bootstrap-datepicker and bootstrap-clockpicker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='addons/bootstrap-datepicker/css/bootstrap-datepicker3.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='addons/bootstrap-clockpicker/css/bootstrap-clockpicker.css') }}">
+
     <link rel="stylesheet" href="http://cdn.wysibb.com/css/default/wbbtheme.css" />
+
     <style>
         textarea.form-control {
             resize: vertical;
@@ -15,18 +20,41 @@
 
 {% block scripts %}
     {{ super() }}
+
+    <!-- Include bootstrap-datepicker, bootstrap-clockpicker, and Date.strftime extension. -->
+    <script type="text/javascript" src="{{ url_for('static', filename='addons/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='addons/bootstrap-clockpicker/js/bootstrap-clockpicker.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='addons/strftime-js/strftime.js') }}"></script>
+
+    <!-- Include WYSIBB Editor -->
     <script src="http://cdn.wysibb.com/js/jquery.wysibb.min.js"></script>
 
-    <script>
+    <script type="text/javascript">
         $(document).ready(function () {
+            // Bootstrap-Datepicker initialization.
+            $('.input-group.date').datepicker({
+                format: 'yyyy-mm-dd',
+                weekStart: 1,
+                toggleActive: true,
+                todayBtn: 'linked',
+                autoclose: true,
+                todayHighlight: true,
+            });
+
+            // Bootstrap-Clockpicker initialization.
+            $('.input-group.time').clockpicker({
+                autoclose: true,
+                donetext: 'Done',
+                placement: 'top',
+            });
+
+            // WYSIBB Editor initialization.
             $('textarea#body').wysibb({
                 traceTextarea: true
             });
             $('textarea#body').removeAttr('required');
             $('.wysibb-toolbar').removeAttr('style');
             $('.wysibb-text-editor').css('min-height', 300);
-
-            $('#image-display').attr('value', $('#image').val().replace('C:\\\\fakepath\\\\', ''));
         });
     </script>
 {% endblock %}
@@ -36,15 +64,45 @@
 {% endblock %}
 
 {% block content %}
-<div class="well">
-    {% call forms.form(form, action=url_for('events.new'), enctype='multipart/form-data') %}
-        {{ forms.form_group(form.title, placeholder='Title') }}
-        {{ forms.form_group(form.body) }}
-        {{ forms.form_group(form.points, placeholder='Points') }}
-        {{ forms.form_group(form.date_time, placeholder='Date and time') }}
-        {{ forms.form_group(form.category_id, placeholder='Category') }}
-        {{ forms.form_group(form.image, placeholder='Image') }}
-        {{ forms.form_submit(text='Create') }}
-    {% endcall %}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Create a new event
+    </div>
+    <div class="panel-body">
+        {% call forms.form(form, action=url_for('events.new'), enctype='multipart/form-data') %}
+            {{ forms.basic_field(form.title, placeholder='Title') }}
+            {{ forms.textarea_field(form.body, placeholder='Body') }}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ forms.basic_field(form.points, placeholder='Points') }}
+                </div>
+                <div class="col-md-6">
+                    {{ forms.select_field(form.category_id, placeholder='Select a Category') }}
+                </div>
+                <div class="col-md-6">
+                    {% call forms.form_group(form.date) %}
+                        {% call forms.colspan_wrapper(None, label=form.date.label) %}
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                {{ form.date(class='form-control', type='text', placeholder='Event date.') }}
+                            </div>
+                        {% endcall %}
+                    {% endcall %}
+                </div>
+                <div class="col-md-6">
+                    {% call forms.form_group(form.time) %}
+                        {% call forms.colspan_wrapper(None, label=form.time.label) %}
+                            <div class="input-group time">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                {{ form.time(class='form-control', type='text', placeholder='Event time.') }}
+                            </div>
+                        {% endcall %}
+                    {% endcall %}
+                </div>
+            </div>
+            {{ forms.file_field(form.image, btn_icon='picture', placeholder='Select an image...') }}
+            {{ forms.button_field(text='Create') }}
+        {% endcall %}
+    </div>
 </div>
 {% endblock %}

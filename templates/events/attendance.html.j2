@@ -1,6 +1,6 @@
-{% import "macros/custom.html.j2" as custom %}
-
 {% extends "layouts/app.html.j2" %}
+
+{% import "macros/forms.html.j2" as forms %}
 
 {% block title %}
 	Event attendance
@@ -19,8 +19,9 @@
 
 {% block content %}
 <div class="well">
-	{{ custom.render_form(form, method='POST', action_text='Submit',
-		action_url=url_for('events.attendance', evt_id=form.event_id.data),
-		btn_class='btn btn-primary btn-block') }}
+	{% call forms.form(form, action=url_for('events.attendance', evt_id=evt_id)) %}
+		{{ forms.default_field(form.attendant_ids) }}
+		{{ forms.button_field('Submit', glyphicon='ok') }}
+	{% endcall %}
 </div>
 {% endblock %}

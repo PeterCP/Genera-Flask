@@ -7,21 +7,45 @@
 	Create new user - Genera App
 {% endblock %}
 
+{% block styles %}
+	{{ super() }}
+	<link rel="stylesheet" href="{{ url_for('static', filename='addons/bootstrap-datepicker/css/bootstrap-datepicker3.css') }}">
+{% endblock %}
+
+{% block scripts %}
+	{{ super() }}
+	<script type="text/javascript" src="{{ url_for('static', filename='addons/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			// Bootstrap-Datepicker initialization.
+			$('#birth_date').datepicker({
+				format: 'yyyy-mm-dd',
+				weekStart: 1,
+				startView: 3,
+				toggleActive: true,
+				autoclose: true,
+			});
+		});
+	</script>
+{% endblock %}
+
 {% block content %}
-<div class="well">
-	{# custom.render_form(form, btn_class='btn btn-primary btn-block',
-		action_text='Register', field_kwargs={
-			'*': {'label_visible': True},
-			'gender': {'inline': True}}) #}
-	{% call forms.form(form, action=url_for('users.new')) %}
-		{{ forms.form_group(form.email) }}
-		{{ forms.form_group(form.password) }}
-		{{ forms.form_group(form.confirm_password) }}
-		{{ forms.form_group(form.first_name) }}
-		{{ forms.form_group(form.last_name) }}
-		{{ forms.form_group(form.gender) }}
-		{{ forms.form_group(form.birth_date) }}
-		{{ forms.form_submit(text='Register', glyphicon='user') }}
-	{% endcall %}
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		Create a new user
+	</div>
+	<div class="panel-body">
+		{% set colspan = ('md', 3, 9) %}
+		{% call forms.form(form, action=url_for('users.new'), class='form-horizontal') %}
+			{{ forms.basic_field(form.email, colspan=colspan) }}
+			{{ forms.basic_field(form.password, colspan=colspan) }}
+			{{ forms.basic_field(form.confirm_password, colspan=colspan) }}
+			{{ forms.basic_field(form.first_name, colspan=colspan) }}
+			{{ forms.basic_field(form.last_name, colspan=colspan) }}
+			{{ forms.radio_field(form.gender, colspan=colspan, inline=True) }}
+			{{ forms.basic_field(form.birth_date, colspan=colspan, type='text') }}
+			{{ forms.button_field(text='Register', glyphicon='user', colspan=colspan) }}
+		{% endcall %}
+	</div>
 </div>
 {% endblock %}

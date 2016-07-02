@@ -10,10 +10,12 @@
 
 {% block content %}
 <div class="well">
-    {% call forms.form(form, action=url_for('login'), method='POST') %}
-        {{ forms.form_group(form.email) }}
-        {{ forms.form_group(form.password) }}
-        {{ forms.form_submit(text='Log in', glyphicon='log-in') }}
+    {% call forms.form(form, action=url_for('login'), method='POST', class='form-horizontal') %}
+        {% set colspan = ('md', 3, 9) %}
+        {{ forms.basic_field(form.email, colspan=colspan) }}
+        {{ forms.default_field(form.password, colspan=colspan) }}
+        {{ forms.checkbox_field(form.remember, colspan=colspan) }}
+        {{ forms.button_field(text='Log in', glyphicon='log-in', colspan=colspan) }}
     {% endcall %}
 </div>
 {% endblock %}
