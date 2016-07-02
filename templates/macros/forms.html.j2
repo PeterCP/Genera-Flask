@@ -1,71 +1,61 @@
-{% macro form(form, action=None, method='POST', class='form', id=None, role='form', enctype=None, hidden_tags=True) -%}
+{% macro form(form, action=None, method='POST', class='form', id=None, role='form', enctype=None,
+    hidden_tags=True, novalidate=False) -%}
 {%- set method = method.upper() -%}
 {%- set spoof_method = method not in ['GET', 'POST'] -%}
-<form method="{{ 'POST' if spoof_method else method }}"
-        {%- if action %}action="{{ action }}"{% endif -%}
-        {%- if role %}role="{{ role }}"{% endif -%}
-        {%- if class %}class="{{ class }}"{% endif -%}
-        {%- if id %}id="{{ id }}"{% endif -%}
-        {%- if enctype %}enctype="{{ enctype }}"{% endif -%}
-        {{- html_params(**kwargs) }}>
+<form method="{{ 'POST' if spoof_method else method }}"{% if action %} action="{{ action }}"{% endif -%}
+        {%- if role %} role="{{ role }}"{% endif %}{% if class %} class="{{ class }}"{% endif -%}
+        {%- if id %} id="{{ id }}"{% endif %}{% if enctype %} enctype="{{ enctype }}"{% endif -%}
+        {%- if novalidate %} novalidate{% endif %}{{ kwargs | xmlattr }}>
     {% if spoof_method -%}
         <input type="hidden" name="_method" value="{{ method }}" />
     {%- endif %}
     {{ form.hidden_tag() if hidden_tags and form.hidden_tag }}
-
-    {{ caller() if caller }}
+    {{ caller() }}
 </form>
 {%- endmacro %}
 
 
 
-{% macro form_group(field, class=None, id=None, help_block=None, placeholder='') -%}
+{# UTILITY WRAPPERS #}
+
+{% macro colspan_wrapper(colspan, label=None, label_class='control-label') %}
+{% if not colspan %}
+    {{ label(class=label_class, **kwargs) if label }}
+    {{ caller() }}
+{% else %}
+    {% set label_colspan = 'col-%s-%s' % (colspan[0], colspan[1]) %}
+    {% set input_colspan = 'col-%s-%s' % (colspan[0], colspan[2]) %}
+    {% if not label %}
+        {% set input_colspan = input_colspan + ' col-%s-offset-%s' % (colspan[0], colspan[1]) %}
+    {% endif %}
+    {{ label(class=' '.join([label_class, label_colspan]), **kwargs) if label }}
+    <div class="{{ input_colspan }}">
+        {{ caller() }}
+    </div>
+{% endif %}
+{% endmacro %}
+
+{% macro form_group(field, class=None, id=None, help_block=None, placeholder=None, colspan=None) -%}
 <div class="form-group{% if field.errors %} has-error{% endif -%}
             {%- if field.flags.required %} required{% endif -%}
             {%- if class %} {{ class }}{% endif %}"
         {%- if id -%}id="{{ id }}"{%- endif -%}
-        {{- html_params(**kwargs) }}>
+        {{- kwargs | xmlattr }}>
 
-    {% if caller -%}
-        {{ caller() }}
-    {%- else -%}
-        {%- if field.widget.input_type == 'checkbox' -%}
-            <div class="checkbox">
-                <label>
-                    {{ field() }} {{ field.label.text }}
-                </label>
-            </div>
-        {%- elif field.type == 'RadioField' -%}
-            {{ field.label(class='control-label radio') }}
-            {%- for choice in field -%}
-                <label class="radio-inline">
-                    {{ choice() }} {{ choice.label.text }}
-                </label>
-            {%- endfor -%}
-        {%- elif field.type == 'FileField' -%}
-            {% set display_id = field.name + '-display' %}
-            {% set onchange = "$('#" + display_id + "').attr('value', $(this).val().replace('C:\\\\fakepath\\\\', ''));" %}
-            {{ field.label(class='control-label') }}
-            <div class="input-group">
-                <label class="input-group-btn">
-                    <span class="btn btn-primary btn-file">
-                        Browse... {{ field(style='display: none;', onchange=onchange) }}
-                    </span>
-                </label>
-                <input class="form-control" type="text" id="{{ display_id }}" placeholder="{{ placeholder }}" readonly>
-            </div>
-        {%- else -%}
-            {{ field.label(class='control-label') }}
-            {{ field(class='form-control', placeholder=placeholder) }}
-        {%- endif -%}
-    {%- endif %}
+    {{ caller() }}
 
+    {% set help_block_class = 'help-block' %}
+    {% if colspan %}
+        {% set help_block_class = help_block_class + ' col-{s}-{b} col-{s}-offset-{a}'.format(
+            s=colspan[0], a=colspan[1], b=colspan[2]
+        ) %}
+    {% endif %}
     {% if help_block and not field.errors -%}
-        <span class="help-block">{{ help_block }}</span>
+        <span class="{{ help_block_class }}">{{ help_block }}</span>
     {%- endif %}
     {% if field.errors -%}
         {%- for error in field.errors -%}
-            <span class="help-block">{{ error }}</span>
+            <span class="{{ help_block_class }}">{{ error }}</span>
         {%- endfor -%}
     {%- endif %}
 </div>
@@ -73,13 +63,108 @@
 
 
 
-{% macro form_submit(text='Submit', btn_class='btn btn-primary', fg_class='form-group', glyphicon=None) %}
-<div class="{{ fg_class }}">
-    <button type="submit" class="{{ btn_class }}">
-        {% if glyphicon -%}
-            <i class="glyphicon glyphicon-{{ glyphicon }}"></i>
-        {%- endif %}
-        {{ text }}
-    </button>
-</div>
-{% endmacro %}
+{# FIELD RENDERERS #}
+
+{% macro button_field(text='Submit', btn_class='btn btn-primary', type='submit', glyphicon=None, colspan=None) -%}
+    <div class="form-group">
+        {%- call colspan_wrapper(colspan) -%}
+            <button type="{{ type }}" class="{{ btn_class }}">
+                {% if glyphicon -%}
+                    <i class="glyphicon glyphicon-{{ glyphicon }}"></i>
+                {%- endif %}
+                {{ text }}
+            </button>
+        {%- endcall -%}
+    </div>
+{%- endmacro %}
+
+{% macro select_field(field, placeholder=None, class='form-control', colspan=None, multiple=False) -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan, label=field.label) -%}
+            <select class="{{ class }}" id="{{ field.name }}" name="{{ field.name }}"{{ ' multiple' if multiple -}}
+                {{- ' required' if field.flags.required }}>
+                {% if placeholder -%}
+                    <option value="" {{ ' selected' if not field.data }}>{{ placeholder }}</option>
+                {%- endif %}
+                {% for value, label in field.choices -%}
+                    <option value="{{ value }}"{{ 'selected' if field.data == value }}>{{ label }}</option>
+                {%- endfor %}
+            </select>
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro textarea_field(field, placeholder=None, class='form-control', colspan=None) -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan, label=field.label) -%}
+            <textarea name="{{ field.name }}" placeholder="{{ placeholder if placeholder }}" class="{{ class }}"
+            id="{{ field.name }}"{{ ' required' if field.flags.required }}>{{ field.data if field.data }}</textarea>
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro file_field(field, placeholder='Nothing selected...', colspan=None, btn_icon='file', btn_text=None) -%}
+    {%- set display_id = field.name + '-display' -%}
+    {%- set onchange = "$('#" + display_id + "').val($(this).val().replace('C:\\\\fakepath\\\\', ''));" -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan, label=field.label) -%}
+            <div class="input-group">
+                <label class="input-group-addon" style="cursor: pointer;">
+                    {% if btn_icon %}<i class="glyphicon glyphicon-{{ btn_icon }}"></i>{% endif %}
+                    {{ btn_text or '' }} {{ field(style='display: none;', onchange=onchange) }}
+                </label>
+                <input type="text" class="form-control" id="{{ display_id }}" value="{{ field.data.filename or '' }}"
+                    placeholder="{{ placeholder or '' }}" readonly>
+            </div>
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro checkbox_field(field, colspan=None, disabled=False) -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan) -%}
+            <div class="checkbox{{ ' disabled' if disabled }}">
+                <label>
+                    {{- field(disabled=disabled) }} {{ field.label.text -}}
+                </label>
+            </div>
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro radio_field(field, colspan=None, inline=False) -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan, label=field.label, label_class='control-label radio') -%}
+            {%- for choice in field -%}
+                {%- if inline -%}
+                    <label class="radio-inline">
+                        {{ choice() }} {{ choice.label.text }}
+                    </label>
+                {%- else -%}
+                    <div class="radio">
+                        <label>
+                            {{ choice() }} {{ choice.label.text }}
+                        </label>
+                    </div>
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro basic_field(field, type=None, placeholder=None, class='form-control', colspan=None) -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan, label=field.label) -%}
+            <input type="{{ type or field.widget.input_type or 'text' }}" name="{{ field.name }}" value="{{ field.data if field.data }}"
+                placeholder="{{ placeholder or '' }}"{{ ' required' if field.flags.required }} class="{{ class }}" id="{{ field.name }}">
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro default_field(field, placeholder=None, class='form-control', colspan=None) -%}
+    {%- call form_group(field, colspan=colspan) -%}
+        {%- call colspan_wrapper(colspan, field.label) -%}
+            {{ field(class=class, placeholder=placeholder or False, required=field.flags.required) }}
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
