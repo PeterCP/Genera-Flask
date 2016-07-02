@@ -29,6 +29,7 @@ Flask-SQLAlchemy
 
 # WTForms integration with Flask.
 Flask-WTF
+WTForms-Components
 
 
 
