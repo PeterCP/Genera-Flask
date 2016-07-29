@@ -9,5 +9,5 @@ BOOTSTRAP_SERVE_LOCAL = True
 MINIFY_PAGE = False
 
 # SQLAlchemy configuration.
-SQLALCHEMY_DATABASE_URI = 'sqlite:///db/test.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///storage/db.sqlite3'
 SQLALCHEMY_TRACK_MODIFICATIONS = True

@@ -20,6 +20,16 @@ class Application(Flask):
 		else:
 			return Flask.select_jinja_autoescape(self, filename)
 
+	def send_storage_file(self, filename):
+		if not self.has_static_folder:
+			raise RuntimeError('No static folder for this object')
+		from flask.helpers import send_from_directory
+		# Ensure get_send_file_max_age is called in all cases.
+		# Here, we ensure get_send_file_max_age is called for Blueprints.
+		cache_timeout = self.get_send_file_max_age(filename)
+		return send_from_directory('storage', filename,
+			cache_timeout=cache_timeout)
+
 
 
 # Create application instance.

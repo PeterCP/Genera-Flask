@@ -45,6 +45,11 @@ def logout():
 
 
 
+app.add_url_rule('/storage/<path:filename>', endpoint='storage',
+	view_func=app.send_storage_file)
+
+
+
 from users import users_blueprint
 app.register_blueprint(users_blueprint)
 

@@ -24,26 +24,26 @@ def save_event_image(event, image):
 	if not event or not image:
 		raise RuntimeError('Must supply both an event and an image')
 	name, ext = os.path.splitext(secure_filename(image.filename))
-	path = 'storage/images/events/{event.id}/main_image{ext}' \
+	path = 'images/events/{event.id}/main_image{ext}' \
 		.format(event=event, ext=ext)
 	try:
-		image.save('static/' + path)
+		image.save(path)
 	except(IOError):
-		os.mkdir('static/storage/images/events/{event.id}'.format(event=event))
-		image.save('static/' + path)
+		os.mkdir('images/events/{event.id}'.format(event=event))
+		image.save(path)
 	return path
 
 def delete_event_image(event):
 	if not event.image_path:
 		return False
 	else:
-		os.remove('static/' + event.image_path)
-		image_dir = 'static/' + os.path.dirname(event.iamge_path)
+		os.remove(event.image_path)
+		image_dir = os.path.dirname(event.iamge_path)
 		if len(os.listdir(image_dir)) == 0:
 			os.removedirs(image_dir)
 		event.image_path = None
 		return True
 
 def get_event_image_url(event):
-	filename = event.image_path or 'storage/images/events/placeholder/main_image.jpg'
-	return url_for('static', filename=filename)
+	filename = event.image_path or 'images/events/placeholder/main_image.jpg'
+	return url_for('storage', filename=filename)
