@@ -91,8 +91,6 @@ def new():
 	if not user:
 		return abort(403)
 
-	app.logger.info(form.data)
-
 	if form.validate_on_submit():
 		data = dict(form.data)
 		data.pop('image')

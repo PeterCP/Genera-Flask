@@ -21,8 +21,6 @@ def view_all():
 def new():
 	form = RegisterUserForm()
 
-	app.logger.info(form.data)
-
 	if form.validate_on_submit():
 		data = dict(form.data)
 		data.pop('confirm_password')
