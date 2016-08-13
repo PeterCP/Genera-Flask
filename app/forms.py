@@ -1,6 +1,6 @@
 from wtforms.fields import *
 from wtforms.fields.html5 import *
-from wtforms.validators import DataRequired, EqualTo
+from wtforms.validators import DataRequired, Optional, EqualTo
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput
 from wtforms_components import TimeField, Email
 from flask_wtf import Form
@@ -37,13 +37,19 @@ class CreateEventForm(Form):
 	title = StringField('Title', validators=[DataRequired()])
 	body = StringField('Post Body', validators=[DataRequired()],
 		widget=TextArea())
+
 	points = IntegerField('Points', validators=[DataRequired()])
-	# date_time = DateTimeLocalField('Date and Time', validators=[DataRequired()],
-	# 	format='%Y-%m-%dT%H:%M')
+	price = DecimalField('Price', validators=[Optional()])
+	max_attendants = IntegerField('Max Attendants', validators=[Optional()])
+
 	date = DateField('Date', validators=[DataRequired()])
 	time = TimeField('Time', validators=[DataRequired()])
 	category_id = SelectField('Category', validators=[DataRequired()], coerce=int)
-	image = FileField('Image', validators=[FileAllowed(['jpg', 'png'], 'Must be an image!')])
+	image = FileField('Image', validators=[FileAllowed(['jpg', 'png'], 'Must be an image! (JPG or PNG)')])
+
+	location_name = StringField('Location Name')
+	latitude = DecimalField('Latitude', places=16, validators=[Optional()])
+	longitude = DecimalField('Longitude', places=16, validators=[Optional()])
 
 
 
