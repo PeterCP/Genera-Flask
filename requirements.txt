@@ -43,3 +43,6 @@ Gunicorn
 
 # CFFI to fix Heroku buildpack issues.
 cffi
+
+# Python MySQL driver.
+MySQL-python --no-binary MySQL-python
