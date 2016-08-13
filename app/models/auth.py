@@ -30,4 +30,3 @@ class AuthPermission(BaseModel):
 
 	def __repr__(self):
 		return '<AuthPermission id={ap.id}, key=\'{ap.key}\'>'.format(ap=self)
-
