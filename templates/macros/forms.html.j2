@@ -65,6 +65,11 @@
 
 {# FIELD RENDERERS #}
 
+{% macro hidden_field(field, id=None) -%}
+    <input type="hidden" id="{{ id or field.name }}" name="{{ field.name }}" value="{{ field.data if field.data }}"
+        {%- if field.flags.required %} required{% endif %}>
+{%- endmacro %}
+
 {% macro button_field(text='Submit', btn_class='btn btn-primary', type='submit', glyphicon=None, colspan=None) -%}
     <div class="form-group">
         {%- call colspan_wrapper(colspan) -%}
@@ -78,8 +83,8 @@
     </div>
 {%- endmacro %}
 
-{% macro select_field(field, placeholder=None, class='form-control', colspan=None, multiple=False) -%}
-    {%- call form_group(field, colspan=colspan) -%}
+{% macro select_field(field, placeholder=None, class='form-control', colspan=None, help_block=None, multiple=False) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan, label=field.label) -%}
             <select class="{{ class }}" id="{{ field.name }}" name="{{ field.name }}"{{ ' multiple' if multiple -}}
                 {{- ' required' if field.flags.required }}>
@@ -94,8 +99,8 @@
     {%- endcall -%}
 {%- endmacro %}
 
-{% macro textarea_field(field, placeholder=None, class='form-control', colspan=None) -%}
-    {%- call form_group(field, colspan=colspan) -%}
+{% macro textarea_field(field, placeholder=None, class='form-control', colspan=None, help_block=None) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan, label=field.label) -%}
             <textarea name="{{ field.name }}" placeholder="{{ placeholder if placeholder }}" class="{{ class }}"
             id="{{ field.name }}"{{ ' required' if field.flags.required }}>{{ field.data if field.data }}</textarea>
@@ -103,12 +108,12 @@
     {%- endcall -%}
 {%- endmacro %}
 
-{% macro file_field(field, placeholder='Nothing selected...', colspan=None, btn_icon='file', btn_text=None) -%}
+{% macro file_field(field, placeholder='Nothing selected...', colspan=None, help_block=None, btn_icon='file', btn_text=None) -%}
     {%- set display_id = field.name + '-display' -%}
     {%- set onchange = "$('#" + display_id + "').val($(this).val().replace('C:\\\\fakepath\\\\', ''));" -%}
-    {%- call form_group(field, colspan=colspan) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan, label=field.label) -%}
-            <div class="input-group">
+            <div class="input-group file">
                 <label class="input-group-addon" style="cursor: pointer;">
                     {% if btn_icon %}<i class="glyphicon glyphicon-{{ btn_icon }}"></i>{% endif %}
                     {{ btn_text or '' }} {{ field(style='display: none;', onchange=onchange) }}
@@ -120,8 +125,8 @@
     {%- endcall -%}
 {%- endmacro %}
 
-{% macro checkbox_field(field, colspan=None, disabled=False) -%}
-    {%- call form_group(field, colspan=colspan) -%}
+{% macro checkbox_field(field, colspan=None, help_block=None, disabled=False) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan) -%}
             <div class="checkbox{{ ' disabled' if disabled }}">
                 <label>
@@ -132,8 +137,8 @@
     {%- endcall -%}
 {%- endmacro %}
 
-{% macro radio_field(field, colspan=None, inline=False) -%}
-    {%- call form_group(field, colspan=colspan) -%}
+{% macro radio_field(field, colspan=None, help_block=None, inline=False) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan, label=field.label, label_class='control-label radio') -%}
             {%- for choice in field -%}
                 {%- if inline -%}
@@ -152,8 +157,8 @@
     {%- endcall -%}
 {%- endmacro %}
 
-{% macro basic_field(field, type=None, placeholder=None, class='form-control', colspan=None) -%}
-    {%- call form_group(field, colspan=colspan) -%}
+{% macro basic_field(field, type=None, placeholder=None, class='form-control', colspan=None, help_block=None) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan, label=field.label) -%}
             <input type="{{ type or field.widget.input_type or 'text' }}" name="{{ field.name }}" value="{{ field.data if field.data }}"
                 placeholder="{{ placeholder or '' }}"{{ ' required' if field.flags.required }} class="{{ class }}" id="{{ field.name }}">
@@ -161,8 +166,18 @@
     {%- endcall -%}
 {%- endmacro %}
 
-{% macro default_field(field, placeholder=None, class='form-control', colspan=None) -%}
-    {%- call form_group(field, colspan=colspan) -%}
+{% macro number_field(field, type=None, placeholder=None, class='form-control', colspan=None, help_block=None, decimal=True, unsigned=False) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
+        {%- call colspan_wrapper(colspan, label=field.label) -%}
+            {%- set pattern = ('-?' if not unsigned else '') + '\d+' + ('(\.\d+)?' if decimal else '') -%}
+            <input type="{{ type or 'text' }}" class="{{ class }}" id="{{ field.name }}" name="{{ field.name }}" value="{{ field.data or '' }}"
+                pattern="{{ pattern }}" placeholder="{{ placeholder or '' }}" {% if field.flags.required %} required{% endif %}>
+        {%- endcall -%}
+    {%- endcall -%}
+{%- endmacro %}
+
+{% macro default_field(field, placeholder=None, class='form-control', colspan=None, help_block=None) -%}
+    {%- call form_group(field, colspan=colspan, help_block=help_block) -%}
         {%- call colspan_wrapper(colspan, field.label) -%}
             {{ field(class=class, placeholder=placeholder or False, required=field.flags.required) }}
         {%- endcall -%}
