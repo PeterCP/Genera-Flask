@@ -13,7 +13,7 @@ class User(BaseModel):
 
 	# Used as login credentials.
 	email = db.Column(db.String(255), unique=True, nullable=False)
-	pw_hash = db.Column(db.String(), nullable=False)
+	pw_hash = db.Column(db.String(255), nullable=False)
 
 	# Personal info fields.
 	first_name = db.Column(db.String(255), nullable=False)
@@ -94,11 +94,9 @@ class User(BaseModel):
 		return score
 
 	def has_permission(self, perm_key):
-		"""
-		Returns True if a permission with perm_key exists within user roles.
-		"""
+		search_exp = perm_key.replace('.', '\.').replace('*', '.+')
 		for role in self.roles:
 			for permission in role.permissions:
-				if permission.key == perm_key:
+				if re.search(search_exp, permission.key):
 					return True
 		return False
