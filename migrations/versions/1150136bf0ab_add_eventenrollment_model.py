@@ -20,7 +20,7 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('event_id', sa.Integer(), nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=False),
-        sa.Column('reason', sa.String(), nullable=True),
+        sa.Column('reason', sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(['event_id'], ['events.id'], ),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
         sa.PrimaryKeyConstraint('id')

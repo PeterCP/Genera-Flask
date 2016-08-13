@@ -1,4 +1,4 @@
-"""empty message
+"""Create tables
 
 Revision ID: 8ca4a81f067e
 Revises: None
@@ -37,7 +37,7 @@ def upgrade():
     op.create_table('users',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('email', sa.String(length=255), nullable=False),
-        sa.Column('pw_hash', sa.String(), nullable=False),
+        sa.Column('pw_hash', sa.String(length=255), nullable=False),
         sa.Column('first_name', sa.String(length=255), nullable=False),
         sa.Column('last_name', sa.String(length=255), nullable=False),
         sa.Column('gender', sa.Boolean(), nullable=False),
@@ -49,7 +49,7 @@ def upgrade():
 
     op.create_table('event_categories',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.String(), nullable=False),
+        sa.Column('name', sa.String(length=255), nullable=False),
 
         sa.PrimaryKeyConstraint('id')
     )
@@ -57,7 +57,7 @@ def upgrade():
     op.create_table('events',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('title', sa.String(length=255), nullable=False),
-        sa.Column('body', sa.String(), nullable=False),
+        sa.Column('body', sa.Text(), nullable=False),
         sa.Column('points', sa.Integer(), nullable=False),
         sa.Column('date', sa.Date(), nullable=False),
         sa.Column('time', sa.Time(), nullable=False),
