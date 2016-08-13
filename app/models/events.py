@@ -12,10 +12,15 @@ class Event(BaseModel):
 
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(255), nullable=False)
-	body = db.Column(db.String, nullable=False)
+	body = db.Column(db.Text, nullable=False)
 	points = db.Column(db.Integer, nullable=False)
 	date = db.Column(db.Date, nullable=False)
 	time = db.Column(db.Time, nullable=False)
+	location_name = db.Column(db.String(255))
+	latitude = db.Column(db.Numeric(scale=16))
+	longitude = db.Column(db.Numeric(scale=16))
+	price = db.Column(db.Numeric(precision=2))
+	max_attendants = db.Column(db.Integer)
 	image_path = db.Column(db.String(255))
 	category_id = db.Column(db.Integer, db.ForeignKey('event_categories.id'),
 		nullable=False)
@@ -57,7 +62,7 @@ class EventCategory(BaseModel):
 	__tablename__ = 'event_categories'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String, nullable=False)
+	name = db.Column(db.String(255), nullable=False)
 	events = db.relationship('Event', backref='category')
 
 	def __repr__(self):
@@ -72,7 +77,7 @@ class EventEnrollment(BaseModel):
 	id = db.Column(db.Integer, primary_key=True)
 	event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-	reason = db.Column(db.String, nullable=True)
+	reason = db.Column(db.Text, nullable=True)
 
 	event = db.relationship('Event', backref='enrollments')
 	user = db.relationship('User', backref='event_enrollments')
