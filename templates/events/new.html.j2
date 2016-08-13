@@ -12,8 +12,24 @@
     <link rel="stylesheet" href="http://cdn.wysibb.com/css/default/wbbtheme.css" />
 
     <style>
+        /* Fix resizing for event body input. */
         textarea.form-control {
             resize: vertical;
+        }
+
+        /* Fix modal z-index */
+        .modal-backdrop {
+            z-index: 30;
+        }
+        .modal {
+            z-index: 40;
+        }
+
+        /* Styling for the map */
+        #location-map {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 15px;
         }
     </style>
 {% endblock %}
@@ -21,16 +37,75 @@
 {% block scripts %}
     {{ super() }}
 
-    <!-- Include bootstrap-datepicker, bootstrap-clockpicker, and Date.strftime extension. -->
+    <!-- Include Bootstrap-DatePicker, Bootstrap-ClockPicker, and Date.strftime extension. -->
     <script type="text/javascript" src="{{ url_for('static', filename='addons/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='addons/bootstrap-clockpicker/js/bootstrap-clockpicker.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='addons/strftime-js/strftime.js') }}"></script>
+
+    <!-- Include Google Maps JS library and jQuery-LocationPicker. -->
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?key={{ config.GOOGLEMAPS_KEY }}&libraries=places"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='addons/jquery-locationpicker/locationpicker.jquery.js') }}"></script>
 
     <!-- Include WYSIBB Editor -->
     <script src="http://cdn.wysibb.com/js/jquery.wysibb.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
+            // Initialize tooltips.
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Set initial location to 'Parque tecniA'.
+            var defaultLocation = {
+                latitude: 21.110959,
+                longitude: -89.61479
+            };
+
+            // Google Maps initialization.
+            $('#location-map').locationpicker({
+                location: {
+                    latitude: 21.110959,
+                    longitude: -89.61479
+                },
+                inputBinding: {
+                    latitudeInput: $('#map-latitude-input'),
+                    longitudeInput: $('#map-longitude-input'),
+                    locationNameInput: $('#map-search-input'),
+                },
+                radius: 0,
+                enableAutocomplete: true,
+            });
+            $('#location-map').locationpicker('subscribe', {
+                event: 'click',
+                callback: function(evt) {
+                    $('#location-map').locationpicker('location', {
+                        latitude: evt.latLng.lat(),
+                        longitude: evt.latLng.lng(),
+                    });
+                }
+            });
+            $('#clear-location-btn').on('click', function() {
+                $('#location-map').locationpicker('location', {
+                    latitude: 21.110959,
+                    longitude: -89.61479
+                });
+                $('.location #latitude').val(undefined);
+                $('.location #longitude').val(undefined);
+                $('.location #location-name').val(undefined);
+                $('#location-modal').modal('hide');
+            });
+            $('#select-location-btn').on('click', function() {
+                var location = $('#location-map').locationpicker('location');
+                $('.location #latitude').val(location.latitude);
+                $('.location #longitude').val(location.longitude);
+                $('.location #location-name').val(location.name);
+                $('#location-modal').modal('hide');
+            });
+
+            // Modal initialization.
+            $('#location-modal').on('shown.bs.modal', function() {
+                $('#location-map').locationpicker('autosize');
+            });
+
             // Bootstrap-Datepicker initialization.
             $('.input-group.date').datepicker({
                 format: 'yyyy-mm-dd',
@@ -69,40 +144,118 @@
         Create a new event
     </div>
     <div class="panel-body">
-        {% call forms.form(form, action=url_for('events.new'), enctype='multipart/form-data') %}
+        {% call forms.form(form, id='create-event-form', action=url_for('events.new'), enctype='multipart/form-data') %}
             {{ forms.basic_field(form.title, placeholder='Title') }}
             {{ forms.textarea_field(form.body, placeholder='Body') }}
             <div class="row">
-                <div class="col-md-6">
-                    {{ forms.basic_field(form.points, placeholder='Points') }}
-                </div>
-                <div class="col-md-6">
+                <div class="col-sm-6">
                     {{ forms.select_field(form.category_id, placeholder='Select a Category') }}
                 </div>
-                <div class="col-md-6">
+                <div class="col-sm-6">
+                    {{ forms.number_field(form.points, placeholder='Points', decimal=False, unsigned=True) }}
+                </div>
+                <div class="col-sm-6">
+                    {{ forms.number_field(form.price, placeholder='Leave blank for free.', unsigned=True) }}
+                </div>
+                <div class="col-sm-6">
+                    {{ forms.number_field(form.max_attendants, placeholder='Leave blank for unlimited.', decimal=False, unsigned=True) }}
+                </div>
+                <div class="col-sm-6">
                     {% call forms.form_group(form.date) %}
                         {% call forms.colspan_wrapper(None, label=form.date.label) %}
                             <div class="input-group date">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                {{ form.date(class='form-control', type='text', placeholder='Event date.') }}
+                                {{ form.date(class='form-control', type='text', placeholder='Event date') }}
                             </div>
                         {% endcall %}
                     {% endcall %}
                 </div>
-                <div class="col-md-6">
+                <div class="col-sm-6">
                     {% call forms.form_group(form.time) %}
                         {% call forms.colspan_wrapper(None, label=form.time.label) %}
                             <div class="input-group time">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
-                                {{ form.time(class='form-control', type='text', placeholder='Event time.') }}
+                                {{ form.time(class='form-control', type='text', placeholder='Event time') }}
                             </div>
                         {% endcall %}
                     {% endcall %}
                 </div>
+                <div class="col-sm-6">
+                    {{ forms.file_field(form.image, btn_icon='picture', placeholder='Select an image...',
+                        help_block='Click on the icon to select an image.') }}
+                </div>
+                <div class="col-sm-6">
+                    {% call forms.form_group(form.location_name, help_block='Click on the icon to show map. Name is editable.') %}
+                        {% call forms.colspan_wrapper(None, label=form.location_name.label) %}
+                        <div class="input-group location">
+                            <span class="input-group-addon" data-toggle="modal" data-target="#location-modal"
+                                style="cursor: pointer;">
+                                <i class="glyphicon glyphicon-map-marker"></i>
+                            </span>
+                            {{ forms.hidden_field(form.latitude) }}
+                            {{ forms.hidden_field(form.longitude) }}
+                            <input class="form-control" id="location-name" name="location_name" type="text"
+                                placeholder="Select a location..." value="{{ form.location_name.data or '' }}">
+                        </div>
+                        {% endcall %}
+                    {% endcall %}
+                </div>
             </div>
-            {{ forms.file_field(form.image, btn_icon='picture', placeholder='Select an image...') }}
             {{ forms.button_field(text='Create') }}
         {% endcall %}
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Event Location Modal -->
+<div class="modal fade" id="location-modal" tabindex="-1" role="dialog" aria-labelledby="location-modal-title">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="location-modal-title">Event Location</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="input-group map-search">
+                        <span class="input-group-addon">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </span>
+                        <input id="map-search-input" class="form-control" type="text" placeholder="Location">
+                    </div>
+                </div>
+                <div id="location-map" class="map"></div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-sm-3 form-group">
+                    <div class="input-group map-latitude">
+                        <span class="input-group-addon">
+                            <i class="glyphicon glyphicon-resize-horizontal"></i>
+                        </span>
+                        <input id="map-latitude-input" class="form-control" type="text" placeholder="Latitude">
+                    </div>
+                </div>
+                <div class="col-sm-3 form-group">
+                    <div class="input-group map-longitude">
+                        <span class="input-group-addon">
+                            <i class="glyphicon glyphicon-resize-vertical"></i>
+                        </span>
+                        <input id="map-longitude-input" class="form-control" type="text" placeholder="Longitude">
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <button type="button" id="clear-location-btn" class="btn btn-default">
+                        Clear
+                    </button>
+                    <button type="button" id="select-location-btn" class="btn btn-primary">
+                        Select
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
