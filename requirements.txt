@@ -45,4 +45,4 @@ Gunicorn
 cffi
 
 # Python MySQL driver.
-MySQL-python --no-binary MySQL-python
+MySQL-python

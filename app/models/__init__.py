@@ -83,22 +83,23 @@ class BaseModel(db.Model):
 		if hasattr(self, 'on_create'):
 			self.on_create()
 
-	def save(self):
+	def save(self, commit=False):
 		db.session.add(self)
 		if hasattr(self, 'on_save'):
 			self.on_save()
-		db.session.commit()
+		if commit:
+			db.session.commit()
 
-	def delete(self):
-		db.session.delete(self)
+	def delete(self, commit=False):
 		if hasattr(self, 'on_delete'):
 			self.on_delete()
-		db.session.commit()
+		db.session.delete(self)
+		if commit:
+			db.session.commit()
 
-	def update(self, **data):
-		for key, value in data.iteritems():
-			if hasattr(self, key):
-				setattr(self, key, value)
+	def update(self, **kwargs):
+		for key, value in kwargs.iteritems():
+			self[key] = value
 		if hasattr(self, 'on_update'):
 			self.on_update()
 		return self # Allow method chaining
@@ -116,8 +117,8 @@ class BaseModel(db.Model):
 		return not self.__eq__(other)
 
 	def __iter__(self):
-		for attr in self.column_keys():
-			yield attr, getattr(self, attr)
+		for col in self.columns():
+			yield col.key, getattr(self, col.key)
 
 	def __getitem__(self, key):
 		if not hasattr(self, key):

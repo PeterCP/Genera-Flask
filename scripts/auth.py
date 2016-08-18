@@ -8,3 +8,4 @@ def create_or_update_role(role_dict):
         role.permissions.append(permission)
         permission.save()
     role.save()
+    db.session.commit()

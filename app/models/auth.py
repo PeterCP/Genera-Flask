@@ -14,6 +14,10 @@ class AuthRole(BaseModel):
 	permissions = db.relationship('AuthPermission',
 		secondary=role_permission_rel, backref='roles')
 
+	def on_delete(self):
+		self.permissions = []
+		self.users = []
+
 	def __repr__(self):
 		return '<AuthRole id={ar.id}, key=\'{ar.key}\'>'.format(ar=self)
 
@@ -27,6 +31,9 @@ class AuthPermission(BaseModel):
 	key = db.Column(db.String(255), unique=True, nullable=False)
 	description = db.Column(db.String(255))
 	""" Backref AuthPermission.roles from AuthRole.permissions """
+
+	def on_delete(self):
+		self.roles = []
 
 	def __repr__(self):
 		return '<AuthPermission id={ap.id}, key=\'{ap.key}\'>'.format(ap=self)
