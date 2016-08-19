@@ -53,4 +53,4 @@ def delete_event_image(event):
 def get_event_image_url(event):
 	if event.image_path:
 		return url_for('storage', filename=event.image_path)
-	return url_for('static', filename='images/events/placeholder/main_image.jpg')
+	return url_for('static', filename='images/events/placeholder.jpg')
