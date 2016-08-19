@@ -22,7 +22,7 @@
 		<dd>{{ event.time | strftime }}</dd>
 
 		<dt>Publisher:</dt>
-		<dd><a href="{{ url_for('users.view_single', user_id=event.publisher.id) }}">
+		<dd><a href="{{ url_for('users.show', user_id=event.publisher.id) }}">
 			{{ event.publisher.full_name }}
 		</a></dd>
 

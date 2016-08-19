@@ -144,7 +144,7 @@
         Create a new event
     </div>
     <div class="panel-body">
-        {% call forms.form(form, id='create-event-form', action=url_for('events.new'), enctype='multipart/form-data') %}
+        {% call forms.form(form, id='create-event-form', action=url_for('events.create'), enctype='multipart/form-data') %}
             {{ forms.basic_field(form.title, placeholder='Title') }}
             {{ forms.textarea_field(form.body, placeholder='Body') }}
             <div class="row">
