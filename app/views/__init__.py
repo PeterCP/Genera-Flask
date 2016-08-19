@@ -18,7 +18,7 @@ def login():
 	form = LoginForm()
 
 	if form.validate_on_submit():
-		user = User.query.filter_by(email=form.email.data).first()
+		user = User.filter_by(email=form.email.data).first()
 
 		if not user:
 			form.email.errors.append('User does not exist.')
@@ -36,7 +36,7 @@ def login():
 @app.route('/logout', methods=['GET'])
 def logout():
 	user_id = session.get('user_id', None)
-	user = User.query.get(user_id) if user_id else None
+	user = User.get(user_id) if user_id else None
 	if user:
 		helpers.logout()
 		flash('Logout successful. Good bye, %s!' % user.first_name, category='info')
