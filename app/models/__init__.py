@@ -76,6 +76,7 @@ class BaseModel(db.Model):
 	@classmethod
 	def create(cls, **kwargs):
 		r = cls(**kwargs)
+		r.save()
 		return r
 
 	def __init__(self, *args, **kwargs):
@@ -85,6 +86,7 @@ class BaseModel(db.Model):
 
 	def save(self, commit=False):
 		db.session.add(self)
+		db.session.flush()
 		if hasattr(self, 'on_save'):
 			self.on_save()
 		if commit:

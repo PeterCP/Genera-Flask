@@ -50,10 +50,9 @@ class Event(BaseModel):
 		self.date = value.date()
 		self.time = value.time()
 
-	def delete(self):
+	def on_delete(self):
 		from app.helpers import delete_event_image
 		delete_event_image(self)
-		BaseModel.delete(self)
 
 
 
