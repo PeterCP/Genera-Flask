@@ -1,6 +1,7 @@
 # App configuration.
 DEBUG = True
 SECRET_KEY = 'genera_flask'
+STORAGE_FOLDER = 'storage'
 
 # Flask-Bootstrap configuration.
 BOOTSTRAP_SERVE_LOCAL = True
