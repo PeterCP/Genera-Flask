@@ -1,10 +1,3 @@
-/* Vertical divider */
-.horizontal-divider {
-    height: 1px;
-    background-color: #ddd;
-    margin-bottom: 15px;
-}
-
 /* Make .form-control[readonly] backgrounds white. */
 .form-control[readonly] {
     background-color: white;

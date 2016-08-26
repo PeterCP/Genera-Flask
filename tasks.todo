@@ -30,5 +30,5 @@ Urgente:
 ☐ Mover la carpeta 'static/storage/' a 'storage/' y agregarla a .gitignore (Se necesita implementar rutas para esto)
 
 AUN MAS URGENTE:
-☐ Disenyo funcional de la pagina principal.
-☐ Investigar extension de Drupal para eventos con puntos y score de usuarios.
+✔ Disenyo funcional de la pagina principal. @done(2016-08-19 14:26)
+✔ Investigar extension de Drupal para eventos con puntos y score de usuarios. @done(2016-08-19 14:26)

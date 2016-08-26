@@ -9,6 +9,7 @@ Permission keys should follow these guidelines:
 - Any other verb should be in infinitive form (e.g. enroll, subscribe, etc.).
 """
 
+# Permissions and roles
 roles = [
     dict(
         key = 'admin',

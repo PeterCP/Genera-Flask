@@ -8,12 +8,13 @@
     <!-- <link rel="stylesheet" href="{{ url_for('static', filename='addons/bootstrap-flat/css/bootstrap-flat-extras.css') }}"> -->
     <link href="{{ url_for('static', filename='css/bootstrap-paper.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ url_for('static', filename='css/sidebar.css') }}" rel="stylesheet" type="text/css">
+    {# <link href="{{ url_for('static', filename='css/sidebar.css') }}" rel="stylesheet" type="text/css"> #}
 {% endblock styles %}
 
 {% block body %}
     {% block navbar %}
-        {% call navigation.navbar(brand_text='Genera', brand_url=url_for('index'), brand_img=url_for('static', filename='brand_img.png')) %}
+        {% call navigation.navbar(nav_class='navbar navbar-default', brand_url=url_for('index'),
+            brand_text='Genera', brand_img=url_for('static', filename='brand_img.png')) %}
             {% call navigation.nav(class='navbar-nav') %}
                 {{ navigation.item(text='Users', url=url_for('users.index')) }}
                 {{ navigation.item(text='Events', url=url_for('events.index')) }}
@@ -31,34 +32,36 @@
         {% endcall %}
     {% endblock navbar %}
 
-    <div class="container">
-        <div class="row row-offcanvas row-offcanvas-left">
-            {% block sidebar %}
-                <div class="col-xs-6 col-sm-3 sidebar-offcanvas sidebar" role="navigation">
-                    {% call navigation.nav() %}
-                        <li><a>Sidebar to be implemented</a></li>
-                    {% endcall %}
-                </div>
-            {% endblock sidebar %}
-            <div class="col-xs-12 col-sm-9">
-                {# Display flash messages. #}
-                {% block flash_messages %}
-                    {% with messages = get_flashed_messages(with_categories=True) %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} fade in">
-                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                <strong>{{ category.capitalize() }}!</strong> {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endwith %}
-                {% endblock flash_messages %}
+    {% block container %}
+        <div class="container" style="margin-top: 87px;">
+            {# <div class="row row-offcanvas row-offcanvas-left">
+                {% block sidebar %}
+                    <div class="col-xs-6 col-sm-3 sidebar-offcanvas sidebar" role="navigation">
+                        {% call navigation.nav() %}
+                            <li><a>Sidebar to be implemented</a></li>
+                        {% endcall %}
+                    </div>
+                {% endblock sidebar %}
+                <div class="col-xs-12 col-sm-9"> #}
+                    {# Display flash messages. #}
+                    {% block flash_messages %}
+                        {% with messages = get_flashed_messages(with_categories=True) %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} fade in">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    <strong>{{ category.capitalize() }}!</strong> {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endwith %}
+                    {% endblock flash_messages %}
 
-                {% block content %}{% endblock content %}
-            </div>
+                    {% block content %}{% endblock content %}
+                {# </div>
+            </div> #}
         </div>
-    </div>
+    {% endblock container %}
 
-    {% block modals %}{% endblock %}
+    {% block modals %}{% endblock modals %}
 
     {% block scripts %}
         {{ super() }}

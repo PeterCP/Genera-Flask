@@ -13,20 +13,32 @@ manager.add_command('runserver', Server(port=8000))
 manager.add_command('db', MigrateCommand)
 
 @manager.command
-def createroles(verbose=False, cleardb=False):
+def createroles(verbose=False):
 	"""Create auth roles as defined in config.auth"""
-
-	if cleardb:
-		clear(verbose=verbose)
 
 	from config.auth import roles
 	from scripts.auth import create_or_update_role
+	if verbose:
+		print 'Current state of roles and permissions in database:'
 	for role in roles:
 		create_or_update_role(role)
 		if verbose:
-			print role['key']
+			print '  %s' % role['key']
 			for perm in role['permissions']:
-				print '  %s' % perm
+				print '    %s' % perm
+
+@manager.command
+def createcategories(verbose=False):
+	"""Create event categories as defined in config.events"""
+
+	from config.events import event_categories
+	from scripts.events import create_or_update_event_category
+	if verbose:
+		print 'Current state of event categories in database:'
+	for category in event_categories:
+		create_or_update_event_category(category)
+		if verbose:
+			print '  %s' % category['name']
 
 @MigrateCommand.command
 def clear(verbose=False):
@@ -44,6 +56,12 @@ def clear(verbose=False):
 			print "Deleted from %s: %s" % (Model.__tablename__, deleted)
 
 	db.session.commit()
+
+@MigrateCommand.command
+def seed(verbose=False):
+	createroles(verbose=verbose)
+	createcategories(verbose=verbose)
+
 
 if __name__ == '__main__':
 	manager.run()

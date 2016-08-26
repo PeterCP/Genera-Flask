@@ -28,7 +28,7 @@
         /* Styling for the map */
         #location-map {
             width: 100%;
-            height: 500px;
+            height: 300px;
             margin-bottom: 15px;
         }
     </style>
@@ -42,14 +42,14 @@
     <script type="text/javascript" src="{{ url_for('static', filename='addons/bootstrap-clockpicker/js/bootstrap-clockpicker.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='addons/strftime-js/strftime.js') }}"></script>
 
-    <!-- Include Google Maps JS library and jQuery-LocationPicker. -->
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?key={{ config.GOOGLEMAPS_KEY }}&libraries=places"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='addons/jquery-locationpicker/locationpicker.jquery.js') }}"></script>
-
     <!-- Include WYSIBB Editor -->
     <script src="http://cdn.wysibb.com/js/jquery.wysibb.min.js"></script>
 
-    <script type="text/javascript">
+    <!-- Include Google Maps JS library and jQuery-LocationPicker. -->
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key={{ config.GOOGLEMAPS_KEY }}&libraries=places"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='addons/jquery-locationpicker/locationpicker.jquery.js') }}"></script>
+
+    <script>
         $(document).ready(function () {
             // Initialize tooltips.
             $('[data-toggle="tooltip"]').tooltip();
@@ -62,10 +62,7 @@
 
             // Google Maps initialization.
             $('#location-map').locationpicker({
-                location: {
-                    latitude: 21.110959,
-                    longitude: -89.61479
-                },
+                location: defaultLocation,
                 inputBinding: {
                     latitudeInput: $('#map-latitude-input'),
                     longitudeInput: $('#map-longitude-input'),

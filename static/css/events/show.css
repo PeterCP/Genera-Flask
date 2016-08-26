@@ -1,0 +1,14 @@
+nav.navbar {
+    margin-bottom: 0;
+}
+#hero {
+    padding-top: 120px;
+    padding-bottom: 50px;
+}
+#hero #buttons-container {
+    margin-top: 30px;
+}
+
+#location #location-name {
+    margin-bottom: 20px;
+}
